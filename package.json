@@ -6,6 +6,9 @@
     "dev": "nx serve web",
     "dev:web": "nx serve web",
     "dev:api": "nx serve api",
+    "dev:db": "docker compose up -d postgres",
+    "dev:db:down": "docker compose down",
+    "dev:db:reset": "docker compose down -v && docker compose up -d postgres",
     "build": "nx run-many -t build --all",
     "build:web": "nx build web",
     "build:api": "nx build api",
@@ -17,7 +20,7 @@
     "lint:api": "nx lint api",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc -b web/tsconfig.app.json apps/api/tsconfig.app.json shared/types/tsconfig.lib.json libs/shared/validation/tsconfig.lib.json libs/shared/config/tsconfig.lib.json libs/shared/test-utils/tsconfig.lib.json --pretty false"
+    "typecheck": "tsc -b apps/web/tsconfig.app.json apps/api/tsconfig.app.json libs/shared/types/tsconfig.lib.json libs/shared/validation/tsconfig.lib.json libs/shared/config/tsconfig.lib.json libs/shared/test-utils/tsconfig.lib.json --pretty false"
   },
   "private": true,
   "devDependencies": {
@@ -49,10 +52,13 @@
     "@swc/helpers": "~0.5.18",
     "@types/jest": "^30.0.0",
     "@types/node": "20.19.9",
+    "@types/pg": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.1",
     "@typescript-eslint/utils": "^8.40.0",
     "angular-eslint": "^21.2.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-playwright": "^1.6.2",
     "jest": "^30.0.2",
     "jest-environment-jsdom": "^30.0.2",
@@ -81,7 +87,9 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "axios": "^1.6.0",
+    "pg": "^8.20.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "~7.8.0"
+    "rxjs": "~7.8.0",
+    "zod": "^4.3.6"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "orgs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/orgs/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/orgs",
+        "main": "libs/orgs/src/index.ts",
+        "tsConfig": "libs/orgs/tsconfig.lib.json",
+        "assets": ["libs/orgs/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/orgs/jest.config.cts"
+      }
+    }
+  }
+}

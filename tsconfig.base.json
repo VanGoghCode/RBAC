@@ -10,29 +10,20 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@rbac-init/types": [
-        "./shared/types/src/index.ts"
-      ],
-      "@rbac-init/validation": [
-        "./libs/shared/validation/src/index.ts"
-      ],
-      "@rbac-init/config": [
-        "./libs/shared/config/src/index.ts"
-      ],
-      "@rbac-init/test-utils": [
-        "./libs/shared/test-utils/src/index.ts"
-      ]
+      "@task-ai/shared/validation": ["./libs/shared/validation/src/index.ts"],
+      "@task-ai/shared/config": ["./libs/shared/config/src/index.ts"],
+      "@task-ai/shared/test-utils": ["./libs/shared/test-utils/src/index.ts"],
+      "@task-ai/auth": ["./libs/auth/src/index.ts"],
+      "@task-ai/orgs": ["./libs/orgs/src/index.ts"],
+      "@task-ai/tasks": ["./libs/tasks/src/index.ts"],
+      "@task-ai/ai": ["./libs/ai/src/index.ts"],
+      "@task-ai/ui": ["./libs/ui/src/index.ts"],
+      "@task-ai/shared/types": ["./libs/shared/types/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

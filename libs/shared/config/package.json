@@ -1,5 +1,5 @@
 {
-  "name": "@rbac-init/config",
+  "name": "@task-ai/shared/config",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

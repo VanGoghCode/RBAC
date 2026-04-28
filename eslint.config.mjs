@@ -34,7 +34,27 @@ export default [
                         }
                     ]
                 }
-            ]
+            ],
+            "import/order": [
+                "error",
+                {
+                    groups: [
+                        "builtin",
+                        "external",
+                        "internal",
+                        "parent",
+                        "sibling",
+                        "index",
+                        "type"
+                    ],
+                    "newlines-between": "never",
+                    alphabetize: {
+                        order: "asc",
+                        caseInsensitive: true
+                    }
+                }
+            ],
+            "@typescript-eslint/no-floating-promises": "error"
         }
     },
     {
@@ -48,7 +68,6 @@ export default [
             "**/*.cjs",
             "**/*.mjs"
         ],
-        // Override or add rules here
         rules: {}
     }
 ];

@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: taskai-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: taskai
+      POSTGRES_PASSWORD: taskai
+      POSTGRES_DB: taskai
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskai -d taskai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  pgdata:
+    driver: local

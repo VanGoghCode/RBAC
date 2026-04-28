@@ -1,5 +1,5 @@
 {
-  "name": "@rbac-init/test-utils",
+  "name": "@task-ai/shared/test-utils",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",
