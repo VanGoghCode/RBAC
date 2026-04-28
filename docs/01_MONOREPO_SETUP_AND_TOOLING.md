@@ -66,8 +66,8 @@ Owner Expectations: The owner can run one command for linting, testing, building
   - [x] Subtask: Add `.env.example` files for root, API, and web.
   - [x] Subtask: Add `.gitignore` for env files, coverage, build outputs, and local database volumes.
 
-### [ ] TDD Requirements
-- [ ] Add a script test or CI dry run that fails if `lint`, `typecheck`, or `test` are missing.
+### [x] TDD Requirements
+- [x] Add a script test or CI dry run that fails if `lint`, `typecheck`, or `test` are missing.
 - [x] Add a formatting check in CI so unformatted files fail the build.
 
 ### [ ] Edge Cases
@@ -87,21 +87,21 @@ Owner Expectations: The local database starts with one command and includes pgve
   - [x] Subtask: Add persistent local volume.
   - [x] Subtask: Add healthcheck.
   - [x] Subtask: Expose database port only for local development.
-- [ ] Create local database documentation.
-  - [ ] Subtask: Document how to start DB.
-  - [ ] Subtask: Document how to reset DB.
-  - [ ] Subtask: Document how to run migrations.
-  - [ ] Subtask: Document how to seed demo data.
+- [x] Create local database documentation.
+  - [x] Subtask: Document how to start DB.
+  - [x] Subtask: Document how to reset DB.
+  - [x] Subtask: Document how to run migrations.
+  - [x] Subtask: Document how to seed demo data.
 
 ### [x] TDD Requirements
 - [x] Add a database connection smoke test that fails when Postgres is not reachable.
 - [x] Add a pgvector extension smoke test that fails if `CREATE EXTENSION vector` has not run.
 
-### [ ] Edge Cases
+### [x] Edge Cases
 - [x] Database container may start slower than the API.
-- [ ] Existing local volume may contain old migrations.
-- [ ] Docker may not be running.
-- [ ] Port 5432 may already be in use.
+- [x] Existing local volume may contain old migrations.
+- [x] Docker may not be running.
+- [x] Port 5432 may already be in use.
 
 ## [x] Submodule 01.4 - Environment Configuration
 
@@ -147,10 +147,10 @@ Owner Expectations: CI runs fast and covers lint, types, unit tests, and builds.
   - [x] Subtask: Build API and web.
 - [x] Add dependency and security checks.
   - [x] Subtask: Add `npm audit` or equivalent as a non-blocking first pass.
-  - [ ] Subtask: Add secret scanning guidance in docs.
+  - [x] Subtask: Add secret scanning guidance in docs.
   - [x] Subtask: Add coverage output artifact.
 
-### [ ] TDD Requirements
+### [x] TDD Requirements
 - [x] Add a deliberately simple test so CI visibly executes tests from both apps.
 - [x] Add a build verification step before merging feature modules.
 
