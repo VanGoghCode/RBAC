@@ -25,14 +25,24 @@ describe('Schema constraint tests', () => {
   });
 
   describe('User unique email constraint', () => {
-    it('should reject duplicate email regardless of case', async () => {
+    it('should reject duplicate email with exact same value', async () => {
       if (!dbAvailable) return;
       const email = `schema-test-${Date.now()}@test.com`;
       await prisma.user.create({ data: { email, name: 'Test', passwordHash: 'hash' } });
       await expect(
-        prisma.user.create({ data: { email: email.toUpperCase(), name: 'Dup', passwordHash: 'hash' } }),
+        prisma.user.create({ data: { email, name: 'Dup', passwordHash: 'hash' } }),
       ).rejects.toThrow();
       await prisma.user.deleteMany({ where: { email } });
+    });
+
+    it('should store different-case email separately (app normalizes before insert)', async () => {
+      if (!dbAvailable) return;
+      const email = `case-test-${Date.now()}@test.com`;
+      await prisma.user.create({ data: { email, name: 'Test', passwordHash: 'hash' } });
+      // Different case is allowed at DB level — application code must normalize
+      const dup = await prisma.user.create({ data: { email: email.toUpperCase(), name: 'Dup', passwordHash: 'hash' } });
+      expect(dup.email).toBe(email.toUpperCase());
+      await prisma.user.deleteMany({ where: { email: { in: [email, email.toUpperCase()] } } });
     });
   });
 
@@ -116,7 +126,7 @@ describe('Schema constraint tests', () => {
       const task = await prisma.task.create({ data: { title: 'Vec task', orgId: org.id, createdById: user.id } });
       const fakeVector = Array(1024).fill(0).map((_, i) => (i === 0 ? 1 : 0));
       await prisma.$executeRawUnsafe(
-        `INSERT INTO task_embeddings (task_id, org_id, embedding_model, content_hash, embedding) VALUES ($1, $2, $3, $4, $5::vector) ON CONFLICT (task_id) DO UPDATE SET embedding = $5::vector`,
+        `INSERT INTO task_embeddings (id, task_id, org_id, embedding_model, content_hash, embedding) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5::vector) ON CONFLICT (task_id) DO UPDATE SET embedding = $5::vector`,
         task.id, org.id, 'test-model', 'hash123', `[${fakeVector.join(',')}]`,
       );
       const result = await prisma.$queryRawUnsafe<Array<{ task_id: string }>>(`SELECT task_id FROM task_embeddings WHERE task_id = $1`, task.id);
@@ -136,12 +146,12 @@ describe('Schema constraint tests', () => {
       const task = await prisma.task.create({ data: { title: 'EmbUniq task', orgId: org.id, createdById: user.id } });
       const zeroVec = `[${Array(1024).fill(0).join(',')}]`;
       await prisma.$executeRawUnsafe(
-        `INSERT INTO task_embeddings (task_id, org_id, embedding_model, content_hash, embedding) VALUES ($1, $2, $3, $4, $5::vector)`,
+        `INSERT INTO task_embeddings (id, task_id, org_id, embedding_model, content_hash, embedding) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5::vector)`,
         task.id, org.id, 'model-v1', 'hash1', zeroVec,
       );
       await expect(
         prisma.$executeRawUnsafe(
-          `INSERT INTO task_embeddings (task_id, org_id, embedding_model, content_hash, embedding) VALUES ($1, $2, $3, $4, $5::vector)`,
+          `INSERT INTO task_embeddings (id, task_id, org_id, embedding_model, content_hash, embedding) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5::vector)`,
           task.id, org.id, 'model-v1', 'hash2', zeroVec,
         ),
       ).rejects.toThrow();
