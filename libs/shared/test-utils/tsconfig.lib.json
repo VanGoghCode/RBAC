@@ -6,7 +6,8 @@
     "types": [
       "node"
     ],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "ignoreDeprecations": "5.0"
   },
   "include": [
     "src/**/*.ts"

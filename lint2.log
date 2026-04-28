@@ -1,0 +1,344 @@
+
+> rbac@0.0.0 lint D:\Code\RBAC
+> nx run-many -t lint --all
+
+
+[7m[1m[36m NX [39m[22m[27m  [36mRunning target [1mlint[22m for 13 projects:[39m
+
+[2m-[22m test-utils
+[2m-[22m validation
+[2m-[22m config
+[2m-[22m types
+[2m-[22m api-e2e
+[2m-[22m web-e2e
+[2m-[22m tasks
+[2m-[22m auth
+[2m-[22m orgs
+[2m-[22m api
+[2m-[22m web
+[2m-[22m ai
+[2m-[22m ui
+
+[2m[36m[39m[22m
+
+[2m> [22m[2mnx run[22m tasks:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\tasks\src\index.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m config:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\shared\config\src\lib\config.spec.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m types:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\shared\types\src\lib\auth\authorization-scope.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m api:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\apps\api\src\app\app.controller.spec.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m test-utils:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\shared\test-utils\src\index.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m web:lint
+
+
+Linting "web"...
+
+[7m[1m[31m NX [39m[22m[27m  [31mError while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.[39m
+
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\apps\web\src\app\app.config.ts
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\apps\web\src\app\app.config.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+
+
+[2m> [22m[2mnx run[22m api-e2e:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\apps\api-e2e\src\api\api.spec.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m validation:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\shared\validation\src\index.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m web-e2e:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\apps\web-e2e\src\example.spec.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m orgs:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\orgs\src\index.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m auth:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\auth\src\index.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m ai:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\ai\src\lib\ai.spec.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m> [22m[2mnx run[22m ui:lint
+
+[2m> [22meslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+Error: Error while loading rule '@typescript-eslint/no-floating-promises': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting D:\Code\RBAC\libs\ui\src\index.ts
+    at throwError (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:40:11)
+    at getParserServices (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\getParserServices.js:29:9)
+    at create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+eslint-p_f206cf60d8dfa76e76b7574faae0f352\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:106:55)
+    at Object.create (D:\Code\RBAC\node_modules\.pnpm\@typescript-eslint+utils@8._9418724baf90484b129fb47184a5385d\node_modules\@typescript-eslint\utils\dist\eslint-utils\RuleCreator.js:39:20)
+    at createRuleListeners (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1019:15)
+    at D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2115:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (D:\Code\RBAC\node_modules\.pnpm\eslint@9.39.4_jiti@2.6.1\node_modules\eslint\lib\linter\linter.js:2203:43)
+Warning: command "eslint ." exited with non-zero status code
+[2m[31m[39m[22m
+
+[7m[1m[31m NX [39m[22m[27m  [31mRunning target [1mlint[22m for 13 projects failed[39m
+
+[2mFailed tasks:[22m
+
+[2m-[22m tasks:lint
+[2m-[22m config:lint
+[2m-[22m types:lint
+[2m-[22m api:lint
+[2m-[22m test-utils:lint
+[2m-[22m web:lint
+[2m-[22m api-e2e:lint
+[2m-[22m validation:lint
+[2m-[22m web-e2e:lint
+[2m-[22m orgs:lint
+[2m-[22m auth:lint
+[2m-[22m ai:lint
+[2m-[22m ui:lint
+
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
