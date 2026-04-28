@@ -201,3 +201,7 @@ Owner Expectations: The OA demo does not accidentally run expensive loops or unb
 - [ ] Run authorized vector search as Admin.
 - [ ] Run authorized vector search as Viewer and confirm fewer results.
 - [ ] Temporarily disable AWS credentials and confirm clear error.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

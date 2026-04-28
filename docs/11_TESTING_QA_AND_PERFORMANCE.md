@@ -232,3 +232,7 @@ Owner Expectations: Manual testing covers the exact things a reviewer is likely 
 - [ ] Run accessibility checks.
 - [ ] Run optional live Bedrock smoke only once.
 - [ ] Run final demo script start to finish without resetting mid-way.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

@@ -227,3 +227,7 @@ Owner Expectations: The final README can claim guardrails are tested and show ex
 - [ ] Simulate canary leakage using mocked test mode and verify response is blocked.
 - [ ] Rapidly send chat requests and verify rate limit.
 - [ ] Confirm normal task questions still work after guardrails are enabled.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

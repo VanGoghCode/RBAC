@@ -184,3 +184,7 @@ Owner Expectations: Every task produces a stable, useful representation for sema
 - [ ] Add comment and confirm it appears in task detail.
 - [ ] Delete task and confirm it disappears from list.
 - [ ] Confirm unauthorized task URL does not reveal whether the task exists.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

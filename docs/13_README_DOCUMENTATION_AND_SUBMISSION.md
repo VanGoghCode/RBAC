@@ -247,3 +247,7 @@ Owner Expectations: The final submission is complete, clean, and reviewable.
 - [ ] Confirm all module checklists that matter for implemented scope are complete.
 - [ ] Confirm known limitations are honest and not framed as bugs.
 - [ ] Submit only after final tests and docs pass.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

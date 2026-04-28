@@ -186,3 +186,7 @@ Owner Expectations: Users can log in, remain logged in through refresh, and are 
 - [ ] Try editing another org's task with a copied task ID.
 - [ ] Confirm Viewer cannot create or edit tasks.
 - [ ] Confirm Owner can access child org tasks but not unrelated org tasks.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

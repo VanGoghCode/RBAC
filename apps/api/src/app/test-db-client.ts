@@ -3,8 +3,8 @@
  * Uses @prisma/adapter-pg for Prisma 7 compatibility.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client';
 import pg from 'pg';
 
 export function createTestPrismaClient(): PrismaClient {

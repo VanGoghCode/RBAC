@@ -4,10 +4,8 @@
  * Requires running PostgreSQL with pgvector (pnpm dev:db).
  */
 
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { TaskRepository } from '@task-ai/tasks';
 import { createTestPrismaClient, isDbReachable } from './test-db-client';
-
-const { TaskRepository } = require('../../../../libs/tasks/src/lib/repositories/task.repository');
 
 let prisma: ReturnType<typeof createTestPrismaClient>;
 let taskRepo: InstanceType<typeof TaskRepository>;

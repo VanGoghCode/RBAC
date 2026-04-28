@@ -174,3 +174,7 @@ Owner Expectations: The README can explain threshold, limitations, and future tu
 - [ ] Choose merge and confirm existing task is updated safely.
 - [ ] Login as Viewer and confirm mutation path is blocked.
 - [ ] Test duplicate warning with keyboard only.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

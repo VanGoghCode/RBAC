@@ -226,3 +226,7 @@ Owner Expectations: AI is an enhancement, not a bypass.
 - [ ] Inspect network responses for stack traces or secrets.
 - [ ] Confirm Angular build does not include AWS credentials.
 - [ ] Confirm README documents security controls and limitations.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

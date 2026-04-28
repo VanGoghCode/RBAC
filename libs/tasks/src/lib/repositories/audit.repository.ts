@@ -9,11 +9,22 @@ export class AuditRepository {
     action: string;
     resourceType: string;
     resourceId: string;
-    metadata?: Record<string, unknown>;
+    metadata?: Prisma.InputJsonValue;
     ipHash?: string;
     userAgentHash?: string;
   }) {
-    return this.prisma.auditLog.create({ data });
+    const createData: Prisma.AuditLogUncheckedCreateInput = {
+      action: data.action,
+      resourceType: data.resourceType,
+      resourceId: data.resourceId,
+      ...(data.actorId ? { actorId: data.actorId } : {}),
+      ...(data.orgId ? { orgId: data.orgId } : {}),
+      ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
+      ...(data.ipHash ? { ipHash: data.ipHash } : {}),
+      ...(data.userAgentHash ? { userAgentHash: data.userAgentHash } : {}),
+    };
+
+    return this.prisma.auditLog.create({ data: createData });
   }
 
   async findMany(

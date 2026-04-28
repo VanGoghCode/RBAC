@@ -63,7 +63,6 @@ export class VectorSearchRepository {
   }
 
   private getVisibilityFilter(scope: AuthorizationScope): { sql: string } {
-    const orgs = scope.allowedOrgIds;
     const isAdmin = Object.values(scope.rolesByOrg)
       .flat()
       .some((r) => r === 'admin' || r === 'owner');

@@ -268,3 +268,7 @@ Owner Expectations: Chat panel visibly streams responses, displays sources, supp
 - [ ] Ask chat to create a task and verify task appears in list.
 - [ ] Start a chat stream and refresh page to verify graceful handling.
 - [ ] Use keyboard only to open chat, send message, and open source card.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

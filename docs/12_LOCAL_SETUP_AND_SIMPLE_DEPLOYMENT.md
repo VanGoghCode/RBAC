@@ -170,3 +170,7 @@ Owner Expectations: The owner can record or present a clean 5-10 minute walkthro
 - [ ] Complete RBAC leak check as Viewer.
 - [ ] Turn off AWS credentials and confirm app shows graceful AI error.
 - [ ] Stop any optional AWS resources after demo to avoid cost.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.

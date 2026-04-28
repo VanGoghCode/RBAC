@@ -210,3 +210,7 @@ Owner Expectations: The app passes keyboard, screen-reader, color, and motion ch
 - [ ] Test at 200 percent zoom.
 - [ ] Test mobile viewport.
 - [ ] Verify screen-reader labels for icon buttons and form controls.
+
+## Other
+
+- [ ] Confirm pre-push command are running and working successfully.
