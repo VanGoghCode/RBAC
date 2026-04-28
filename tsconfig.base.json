@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "@rbac-init/types": [
+        "./shared/types/src/index.ts"
+      ],
+      "@rbac-init/validation": [
+        "./libs/shared/validation/src/index.ts"
+      ],
+      "@rbac-init/config": [
+        "./libs/shared/config/src/index.ts"
+      ],
+      "@rbac-init/test-utils": [
+        "./libs/shared/test-utils/src/index.ts"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
+}
