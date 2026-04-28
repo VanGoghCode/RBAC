@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Core Domain (Submodule 02.1) ────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique @map("email_normalized")
+  name         String
+  passwordHash String   @map("password_hash")
+  disabledAt   DateTime? @map("disabled_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  memberships    OrgMembership[]
+  assignedTasks  Task[]             @relation("TaskAssignee")
+  createdTasks   Task[]             @relation("TaskCreator")
+  activities     TaskActivity[]
+  auditLogs      AuditLog[]
+  chatConversations ChatConversation[]
+  dedupEvents    DedupEvent[]
+
+  @@map("users")
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  parentOrgId String? @map("parent_org_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  parentOrg    Organization?  @relation("OrgHierarchy", fields: [parentOrgId], references: [id])
+  childOrgs    Organization[] @relation("OrgHierarchy")
+  memberships  OrgMembership[]
+  tasks        Task[]
+  taskEmbeddings TaskEmbedding[]
+  chatConversations ChatConversation[]
+  auditLogs     AuditLog[]
+  dedupEvents   DedupEvent[]
+
+  @@map("organizations")
+}
+
+model OrgMembership {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  orgId     String   @map("org_id")
+  role      String   // owner, admin, member, viewer
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User         @relation(fields: [userId], references: [id])
+  org  Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([userId, orgId])
+  @@index([userId])
+  @@index([orgId])
+  @@index([role])
+  @@map("org_memberships")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  BLOCKED
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskVisibility {
+  PUBLIC        // visible to all org members
+  ASSIGNED_ONLY // visible to assignee + admins
+  PRIVATE       // visible to creator + admins only
+}
+
+model Task {
+  id          String         @id @default(uuid())
+  orgId       String         @map("org_id")
+  title       String
+  description String?
+  status      TaskStatus     @default(TODO)
+  priority    TaskPriority   @default(MEDIUM)
+  category    String?
+  visibility  TaskVisibility @default(PUBLIC)
+  createdById String         @map("created_by_id")
+  assigneeId  String?        @map("assignee_id")
+  dueAt       DateTime?      @map("due_at")
+  completedAt DateTime?      @map("completed_at")
+  deletedAt   DateTime?      @map("deleted_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  org       Organization @relation(fields: [orgId], references: [id])
+  creator   User         @relation("TaskCreator", fields: [createdById], references: [id])
+  assignee  User?        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  activities TaskActivity[]
+  embedding  TaskEmbedding?
+
+  @@index([orgId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueAt])
+  @@index([updatedAt])
+  @@map("tasks")
+}
+
+enum ActivityType {
+  STATUS_CHANGE
+  COMMENT
+  ASSIGNMENT_CHANGE
+  PRIORITY_CHANGE
+  DUE_DATE_CHANGE
+}
+
+model TaskActivity {
+  id        String       @id @default(uuid())
+  taskId    String       @map("task_id")
+  actorId   String       @map("actor_id")
+  type      ActivityType
+  fromValue String?      @map("from_value")
+  toValue   String?      @map("to_value")
+  comment   String?
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  task  Task @relation(fields: [taskId], references: [id])
+  actor User @relation(fields: [actorId], references: [id])
+
+  @@index([taskId, createdAt])
+  @@map("task_activities")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?  @map("actor_id")
+  orgId        String?  @map("org_id")
+  action       String
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id")
+  metadata     Json?
+  ipHash       String?  @map("ip_hash")
+  userAgentHash String? @map("user_agent_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  actor User?         @relation(fields: [actorId], references: [id])
+  org   Organization? @relation(fields: [orgId], references: [id])
+
+  @@index([actorId])
+  @@index([orgId])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ─── AI and Chat Tables (Submodule 02.2) ─────────────────────────────
+
+model TaskEmbedding {
+  id              String   @id @default(uuid())
+  taskId          String   @unique @map("task_id")
+  orgId           String   @map("org_id")
+  assigneeId      String?  @map("assignee_id")
+  visibility      TaskVisibility @default(PUBLIC)
+  embeddingModel  String   @map("embedding_model")
+  embeddingVersion Int     @default(1) @map("embedding_version")
+  contentHash     String   @map("content_hash")
+  embedding       Unsupported("vector(1024)")?
+  indexedAt       DateTime @default(now()) @map("indexed_at")
+  staleAt         DateTime? @map("stale_at")
+
+  task     Task         @relation(fields: [taskId], references: [id])
+  org      Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([taskId, embeddingModel])
+  @@index([orgId])
+  @@index([assigneeId])
+  @@index([visibility])
+  @@map("task_embeddings")
+}
+
+model ChatConversation {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  orgId     String   @map("org_id")
+  title     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User          @relation(fields: [userId], references: [id])
+  org     Organization  @relation(fields: [orgId], references: [id])
+  messages ChatMessage[]
+
+  @@index([userId, updatedAt])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id               String   @id @default(uuid())
+  conversationId   String   @map("conversation_id")
+  role             String   // user, assistant, system
+  content          String
+  sourcesJson      Json?    @map("sources_json")
+  guardrailResultJson Json? @map("guardrail_result_json")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  conversation ChatConversation @relation(fields: [conversationId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@map("chat_messages")
+}
+
+model PromptVersion {
+  id          String   @id @default(uuid())
+  name        String
+  version     Int
+  contentHash String   @map("content_hash")
+  active      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([name, version])
+  @@map("prompt_versions")
+}
+
+model LlmInteractionLog {
+  id              String   @id @default(uuid())
+  modelId         String?  @map("model_id")
+  promptTokens    Int?     @map("prompt_tokens")
+  completionTokens Int?    @map("completion_tokens")
+  latencyMs       Int?     @map("latency_ms")
+  redacted        Boolean  @default(false)
+  guardrailOutcome String? @map("guardrail_outcome")
+  metadata        Json?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("llm_interaction_logs")
+}
+
+enum DedupDecision {
+  MERGE
+  SKIP
+  CREATE_ANYWAY
+  DISMISSED
+}
+
+model DedupEvent {
+  id             String       @id @default(uuid())
+  userId         String       @map("user_id")
+  orgId          String       @map("org_id")
+  candidateTaskId String     @map("candidate_task_id")
+  matchedTaskId  String       @map("matched_task_id")
+  similarity     Float
+  decision       DedupDecision
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  user User         @relation(fields: [userId], references: [id])
+  org  Organization @relation(fields: [orgId], references: [id])
+
+  @@index([userId])
+  @@index([orgId])
+  @@index([candidateTaskId])
+  @@map("dedup_events")
+}

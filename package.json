@@ -9,6 +9,7 @@
     "dev:db": "docker compose up -d postgres",
     "dev:db:down": "docker compose down",
     "dev:db:reset": "docker compose down -v && docker compose up -d postgres",
+    "db:init": "node -e \"const pg=require('pg');const c=new pg.Client(process.env.DATABASE_URL||'postgresql://taskai:taskai@localhost:5432/taskai');c.connect().then(()=>c.query('CREATE EXTENSION IF NOT EXISTS vector').then(()=>{console.log('pgvector ready');c.end()}))\"",
     "build": "nx run-many -t build --all",
     "build:web": "nx build web",
     "build:api": "nx build api",
@@ -20,7 +21,15 @@
     "lint:api": "nx lint api",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc -b apps/web/tsconfig.app.json apps/api/tsconfig.app.json libs/shared/types/tsconfig.lib.json libs/shared/validation/tsconfig.lib.json libs/shared/config/tsconfig.lib.json libs/shared/test-utils/tsconfig.lib.json --pretty false"
+    "typecheck": "tsc -b apps/web/tsconfig.app.json apps/api/tsconfig.app.json libs/shared/types/tsconfig.lib.json libs/shared/validation/tsconfig.lib.json libs/shared/config/tsconfig.lib.json libs/shared/test-utils/tsconfig.lib.json --pretty false",
+    "prepare": "husky",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:reset": "prisma migrate reset --force",
+    "db:generate": "prisma generate",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:push": "prisma db push"
   },
   "private": true,
   "devDependencies": {
@@ -60,6 +69,7 @@
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-playwright": "^1.6.2",
+    "husky": "^9.1.7",
     "jest": "^30.0.2",
     "jest-environment-jsdom": "^30.0.2",
     "jest-environment-node": "^30.0.2",
@@ -71,6 +81,7 @@
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0",
     "webpack-cli": "^5.1.4"
@@ -86,10 +97,16 @@
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "axios": "^1.6.0",
     "pg": "^8.20.0",
+    "prisma": "^7.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.8.0",
     "zod": "^4.3.6"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   }
 }

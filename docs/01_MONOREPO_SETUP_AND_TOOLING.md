@@ -37,7 +37,7 @@ Owner Expectations: The workspace builds locally and each generated app/library 
 - [x] Add an API health test that fails before the `/health` endpoint exists.
 - [x] Add a web shell test that fails before the root app renders the expected title.
 
-### [ ] Edge Cases
+### [X] Edge Cases
 - [x] Imports must not create circular dependencies between feature libraries.
 - [x] The web app must not import server-only libraries.
 - [x] Shared types must not contain secrets, Prisma client code, or Node-only APIs.
@@ -70,7 +70,7 @@ Owner Expectations: The owner can run one command for linting, testing, building
 - [x] Add a script test or CI dry run that fails if `lint`, `typecheck`, or `test` are missing.
 - [x] Add a formatting check in CI so unformatted files fail the build.
 
-### [ ] Edge Cases
+### [X] Edge Cases
 - [x] Commands must work on a clean clone.
 - [x] Commands must not require global Nx installation.
 - [x] Scripts must not echo secrets from environment files.
@@ -154,7 +154,7 @@ Owner Expectations: CI runs fast and covers lint, types, unit tests, and builds.
 - [x] Add a deliberately simple test so CI visibly executes tests from both apps.
 - [x] Add a build verification step before merging feature modules.
 
-### [ ] Edge Cases
+### [x] Edge Cases
 - [x] CI must not require real AWS credentials.
 - [x] CI must not invoke real Bedrock calls.
 - [x] CI must not depend on a developer's local `.env` file.
