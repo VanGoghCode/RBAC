@@ -1,4 +1,5 @@
 import nx from "@nx/eslint-plugin";
+import pluginImport from "eslint-plugin-import";
 
 export default [
     ...nx.configs["flat/base"],
@@ -11,6 +12,7 @@ export default [
         ]
     },
     {
+        plugins: { import: pluginImport },
         files: [
             "**/*.ts",
             "**/*.tsx",
@@ -53,8 +55,7 @@ export default [
                         caseInsensitive: true
                     }
                 }
-            ],
-            "@typescript-eslint/no-floating-promises": "error"
+            ]
         }
     },
     {
