@@ -16,6 +16,8 @@
     "test": "nx run-many -t test --all",
     "test:web": "nx test web",
     "test:api": "nx test api",
+    "pretest": "pnpm run db:generate",
+    "pretypecheck": "pnpm run db:generate",
     "lint": "nx run-many -t lint --all",
     "lint:web": "nx lint web",
     "lint:api": "nx lint api",
