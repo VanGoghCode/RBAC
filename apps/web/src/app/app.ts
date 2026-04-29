@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthState } from './auth/auth.state';
 
@@ -13,14 +13,13 @@ export class App {
   readonly authState = inject(AuthState);
   readonly sidebarOpen = signal(false);
   readonly userMenuOpen = signal(false);
+  readonly orgMenuOpen = signal(false);
+
+  readonly memberships = computed(() => this.authState.user()?.memberships ?? []);
+  readonly activeOrgName = computed(() => this.authState.activeOrg()?.orgName ?? '');
 
   get displayName(): string {
     return this.authState.user()?.name ?? 'User';
-  }
-
-  get orgName(): string {
-    const memberships = this.authState.user()?.memberships ?? [];
-    return memberships.length > 0 ? memberships[0].orgName : '';
   }
 
   toggleSidebar(): void {
@@ -31,8 +30,21 @@ export class App {
     this.userMenuOpen.update((v) => !v);
   }
 
+  toggleOrgMenu(): void {
+    this.orgMenuOpen.update((v) => !v);
+  }
+
   closeUserMenu(): void {
     setTimeout(() => this.userMenuOpen.set(false), 150);
+  }
+
+  closeOrgMenu(): void {
+    setTimeout(() => this.orgMenuOpen.set(false), 150);
+  }
+
+  switchOrg(orgId: string): void {
+    this.authState.setActiveOrg(orgId);
+    this.orgMenuOpen.set(false);
   }
 
   async logout(): Promise<void> {

@@ -154,7 +154,8 @@ export class TaskCreatePage {
     if (!this.title.trim()) return;
 
     const user = this.authState.user();
-    if (!user || user.memberships.length === 0) {
+    const orgId = this.authState.activeOrgId();
+    if (!user || !orgId) {
       this.error.set('No organization found.');
       return;
     }
@@ -164,7 +165,7 @@ export class TaskCreatePage {
 
     const payload: CreateTaskPayload = {
       title: this.title.trim(),
-      orgId: user.memberships[0].orgId,
+      orgId,
       status: this.status,
       priority: this.priority,
       visibility: this.visibility,

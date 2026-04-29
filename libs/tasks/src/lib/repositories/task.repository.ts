@@ -39,24 +39,35 @@ export class TaskRepository {
       ...(filters?.dueAfter
         ? { dueAt: { ...(filters.dueBefore ? {} : {}), gte: new Date(filters.dueAfter) } }
         : {}),
-      ...(filters?.search
-        ? {
-            OR: [
-              { title: { contains: filters.search, mode: 'insensitive' } },
-              { description: { contains: filters.search, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
       ...(pagination?.cursor ? { id: { lt: pagination.cursor } } : {}),
     };
 
     // Visibility filtering for non-admin/owner
     const effectiveOrgId = filters?.orgId;
+    const visibilityOr: Prisma.TaskWhereInput[] = [
+      { visibility: 'PUBLIC' },
+      { assigneeId: scope.actorUserId, visibility: 'ASSIGNED_ONLY' },
+      { createdById: scope.actorUserId, visibility: 'PRIVATE' },
+    ];
+
     if (!this.isAdminOrOwner(scope, effectiveOrgId)) {
+      if (filters?.search) {
+        where.AND = [
+          {
+            OR: [
+              { title: { contains: filters.search, mode: 'insensitive' } },
+              { description: { contains: filters.search, mode: 'insensitive' } },
+            ],
+          },
+          { OR: visibilityOr },
+        ];
+      } else {
+        where.OR = visibilityOr;
+      }
+    } else if (filters?.search) {
       where.OR = [
-        { visibility: 'PUBLIC' },
-        { assigneeId: scope.actorUserId, visibility: 'ASSIGNED_ONLY' },
-        { createdById: scope.actorUserId, visibility: 'PRIVATE' },
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 

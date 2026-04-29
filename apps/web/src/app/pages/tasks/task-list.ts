@@ -143,16 +143,18 @@ export class TaskListPage implements OnInit, OnDestroy {
   get canCreate(): boolean {
     const user = this.authState.user();
     if (!user) return false;
-    return user.memberships.some((m) => m.role !== 'viewer');
+    const activeOrgId = this.authState.activeOrgId();
+    return user.memberships.some((m) => m.orgId === activeOrgId && m.role !== 'viewer');
   }
 
   ngOnInit(): void {
     const user = this.authState.user();
-    if (!user || user.memberships.length === 0) {
+    const orgId = this.authState.activeOrgId();
+    if (!user || !orgId) {
       this.loading.set(false);
       return;
     }
-    this.orgId = user.memberships[0].orgId;
+    this.orgId = orgId;
     this.loadTasks();
   }
 

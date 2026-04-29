@@ -83,4 +83,56 @@ describe('AuthState', () => {
     expect(state.hasRole('org-1', 'owner')).toBe(false);
     expect(state.hasRole('other-org', 'viewer')).toBe(false);
   });
+
+  it('activeOrgId defaults to first membership', async () => {
+    const multiOrgProfile: UserProfileResponse = {
+      ...mockProfile,
+      memberships: [
+        { orgId: 'org-parent', orgName: 'Parent', orgSlug: 'parent', role: 'owner' },
+        { orgId: 'org-child', orgName: 'Child', orgSlug: 'child', role: 'owner' },
+      ],
+    };
+    const loginRes: LoginResponse = { accessToken: 'at', user: multiOrgProfile };
+    api.login.mockReturnValue(of(loginRes));
+
+    await state.login('test@example.com', 'pass');
+    expect(state.activeOrgId()).toBe('org-parent');
+  });
+
+  it('setActiveOrg switches active org', async () => {
+    const multiOrgProfile: UserProfileResponse = {
+      ...mockProfile,
+      memberships: [
+        { orgId: 'org-parent', orgName: 'Parent', orgSlug: 'parent', role: 'owner' },
+        { orgId: 'org-child', orgName: 'Child', orgSlug: 'child', role: 'owner' },
+      ],
+    };
+    const loginRes: LoginResponse = { accessToken: 'at', user: multiOrgProfile };
+    api.login.mockReturnValue(of(loginRes));
+
+    await state.login('test@example.com', 'pass');
+    state.setActiveOrg('org-child');
+    expect(state.activeOrgId()).toBe('org-child');
+    expect(state.activeOrg()?.orgName).toBe('Child');
+  });
+
+  it('setActiveOrg ignores invalid orgId', async () => {
+    const loginRes: LoginResponse = { accessToken: 'at', user: mockProfile };
+    api.login.mockReturnValue(of(loginRes));
+
+    await state.login('test@example.com', 'pass');
+    state.setActiveOrg('nonexistent-org');
+    expect(state.activeOrgId()).toBe('org-1');
+  });
+
+  it('logout clears active org', async () => {
+    const loginRes: LoginResponse = { accessToken: 'at', user: mockProfile };
+    api.login.mockReturnValue(of(loginRes));
+
+    await state.login('test@example.com', 'pass');
+    state.setActiveOrg('org-1');
+    api.logout.mockReturnValue(of({ success: true }));
+    await state.logout();
+    expect(state.activeOrgId()).toBeNull();
+  });
 });

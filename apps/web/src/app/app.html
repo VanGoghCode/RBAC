@@ -11,9 +11,40 @@
       <span aria-hidden="true">&#9776;</span>
     </button>
     <span class="topbar-brand">TaskAI</span>
-    @if (orgName) {
-      <span class="topbar-org">{{ orgName }}</span>
+
+    <!-- Org switcher -->
+    @if (activeOrgName()) {
+      <div class="topbar-org" [class.open]="orgMenuOpen()">
+        <button
+          class="topbar-org-btn"
+          (click)="toggleOrgMenu()"
+          (blur)="closeOrgMenu()"
+          aria-label="Switch organization"
+          [attr.aria-expanded]="orgMenuOpen()"
+        >
+          {{ activeOrgName() }}
+          @if (memberships().length > 1) {
+            <span aria-hidden="true">&#9662;</span>
+          }
+        </button>
+        @if (orgMenuOpen() && memberships().length > 1) {
+          <div class="topbar-dropdown" role="menu">
+            @for (m of memberships(); track m.orgId) {
+              <button
+                role="menuitem"
+                class="topbar-dropdown-item"
+                [class.active]="m.orgId === authState.activeOrgId()"
+                (click)="switchOrg(m.orgId)"
+              >
+                {{ m.orgName }}
+                <span class="topbar-dropdown-role">{{ m.role }}</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
     }
+
     <div class="topbar-spacer"></div>
     <div class="topbar-user" [class.open]="userMenuOpen()">
       <button

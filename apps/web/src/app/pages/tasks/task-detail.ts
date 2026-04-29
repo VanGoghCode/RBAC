@@ -213,8 +213,9 @@ export class TaskDetailPage implements OnInit, OnDestroy {
 
   canComment(): boolean {
     const user = this.authState.user();
-    if (!user) return false;
-    return user.memberships.some((m) => m.role !== 'viewer');
+    const t = this.task();
+    if (!user || !t) return false;
+    return user.memberships.some((m) => m.orgId === t.orgId && m.role !== 'viewer');
   }
 
   describeActivity(act: ActivityItem): string {
