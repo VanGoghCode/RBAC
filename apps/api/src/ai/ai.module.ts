@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
 import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime';
+import { Module } from '@nestjs/common';
 import {
   createBedrockClient,
   BedrockConfig,

@@ -1,6 +1,6 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-import type { LlmClient, LlmOptions, LlmResponse } from './llm-client.interface';
 import { withRetry } from '../retry/retry-policy';
+import type { LlmClient, LlmOptions, LlmResponse } from './llm-client.interface';
 
 export class BedrockLlmClient implements LlmClient {
   constructor(

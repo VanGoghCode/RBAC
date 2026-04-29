@@ -1,7 +1,7 @@
+import { PROMPT_MANIFEST } from './prompt-manifest';
 import { PromptRenderer } from './prompt-renderer';
 import { RAG_SYSTEM_PROMPT } from './rag-system.prompt';
 import { TASK_CREATION_PROMPT } from './task-creation.prompt';
-import { PROMPT_MANIFEST } from './prompt-manifest';
 
 describe('PromptRenderer', () => {
   let renderer: PromptRenderer;

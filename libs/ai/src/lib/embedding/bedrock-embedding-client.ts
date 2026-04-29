@@ -1,14 +1,14 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-import type { EmbeddingClient, EmbeddingResponse } from './embedding-client.interface';
-import { EMBEDDING_DIMENSIONS } from './embedding-client.interface';
 import { withRetry } from '../retry/retry-policy';
+import { EMBEDDING_DIMENSIONS } from './embedding-client.interface';
 import { validateVectorDimensions } from './vector-validator';
+import type { EmbeddingClient, EmbeddingResponse } from './embedding-client.interface';
 
 export class BedrockEmbeddingClient implements EmbeddingClient {
   constructor(
     private readonly client: BedrockRuntimeClient,
     private readonly modelId: string,
-    private readonly timeoutMs: number = 15000,
+    private readonly timeoutMs = 15000,
   ) {}
 
   async embedText(text: string): Promise<EmbeddingResponse> {

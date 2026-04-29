@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaClient, TaskVisibility } from '@prisma/client';
-import type { EmbeddingClient } from '@task-ai/ai';
 import { TaskCompositeTextBuilder } from '@task-ai/tasks';
+import type { EmbeddingClient } from '@task-ai/ai';
 
 export interface EmbeddingJob {
   taskId: string;
