@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaClient, TaskVisibility } from '@prisma/client';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { TaskVisibility } from '@prisma/client';
 import { TaskCompositeTextBuilder } from '@task-ai/tasks';
 import type { EmbeddingClient } from '@task-ai/ai';
+import { PrismaService } from '../prisma';
 
 export interface EmbeddingJob {
   taskId: string;
@@ -16,8 +17,8 @@ export class EmbeddingPipelineService {
   private readonly textBuilder = new TaskCompositeTextBuilder();
 
   constructor(
-    private readonly prisma: PrismaClient,
-    private readonly embeddingClient: EmbeddingClient,
+    private readonly prisma: PrismaService,
+    @Inject('EmbeddingClient') private readonly embeddingClient: EmbeddingClient,
   ) {}
 
   async indexStaleTasks(limit = 50): Promise<{ indexed: number; skipped: number; failed: number }> {
