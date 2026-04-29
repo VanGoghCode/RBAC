@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma';
 
 export interface LlmCallRecord {
   modelId?: string;
@@ -15,7 +16,7 @@ export interface LlmCallRecord {
 export class LlmTelemetryService {
   private readonly logger = new Logger(LlmTelemetryService.name);
 
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async logInteraction(record: LlmCallRecord): Promise<void> {
     try {
