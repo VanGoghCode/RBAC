@@ -204,7 +204,7 @@ Owner Expectations: The OA demo does not accidentally run expensive loops or unb
 
 ## Other
 
-- [ ] Confirm pre-push command are running and working successfully.
+- [x] Confirm pre-push command are running and working successfully.
 
 ---
 

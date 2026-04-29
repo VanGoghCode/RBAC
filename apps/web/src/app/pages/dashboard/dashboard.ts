@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { TasksApi, TaskItem } from '../../services/tasks.api';
+import { ChatPanelComponent } from '../../shared/chat-panel/chat-panel';
 import { EmptyState } from '../../shared/empty-state';
 import { ErrorAlert } from '../../shared/error-alert';
 import { LoadingComponent } from '../../shared/loading';
@@ -14,7 +15,7 @@ import { StatusBadge } from '../../shared/status-badge';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, PageHeader, StatusBadge, PriorityBadge, EmptyState, LoadingComponent, ErrorAlert],
+  imports: [RouterLink, DatePipe, PageHeader, StatusBadge, PriorityBadge, EmptyState, LoadingComponent, ErrorAlert, ChatPanelComponent],
   template: `
     <app-page-header heading="Dashboard" [subtitle]="'Welcome, ' + displayName">
       @if (canCreate) {
@@ -87,6 +88,8 @@ import { StatusBadge } from '../../shared/status-badge';
         }
       }
     }
+
+    <app-chat-panel />
   `,
   styles: [`
     .summary-grid {
