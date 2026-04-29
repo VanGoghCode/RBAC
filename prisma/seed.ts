@@ -7,7 +7,7 @@
 import { PrismaClient, TaskStatus, TaskPriority, TaskVisibility, ActivityType, DedupDecision } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
-import { createHash } from 'node:crypto';
+import bcrypt from 'bcryptjs';
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://taskai:taskai@localhost:5432/taskai',
@@ -16,7 +16,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter } as any);
 
 function hashPassword(plain: string): string {
-  return createHash('sha256').update(plain).digest('hex');
+  return bcrypt.hashSync(plain, 12);
 }
 
 async function main() {
@@ -42,7 +42,7 @@ async function main() {
   // ─── Users ───────────────────────────────────────────────────
   const ownerUser = await prisma.user.upsert({
     where: { email: 'owner@acme.com' },
-    update: {},
+    update: { passwordHash: hashPassword('password123') },
     create: {
       email: 'owner@acme.com',
       name: 'Alice Owner',
@@ -52,7 +52,7 @@ async function main() {
 
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@acme.com' },
-    update: {},
+    update: { passwordHash: hashPassword('password123') },
     create: {
       email: 'admin@acme.com',
       name: 'Bob Admin',
@@ -62,7 +62,7 @@ async function main() {
 
   const viewerUser = await prisma.user.upsert({
     where: { email: 'viewer@acme.com' },
-    update: {},
+    update: { passwordHash: hashPassword('password123') },
     create: {
       email: 'viewer@acme.com',
       name: 'Carol Viewer',
@@ -72,7 +72,7 @@ async function main() {
 
   const memberUser = await prisma.user.upsert({
     where: { email: 'member@acme.com' },
-    update: {},
+    update: { passwordHash: hashPassword('password123') },
     create: {
       email: 'member@acme.com',
       name: 'Dave Member',

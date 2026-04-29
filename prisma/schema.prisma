@@ -24,6 +24,7 @@ model User {
   auditLogs      AuditLog[]
   chatConversations ChatConversation[]
   dedupEvents    DedupEvent[]
+  refreshTokens  RefreshToken[]
 
   @@map("users")
 }
@@ -274,4 +275,23 @@ model DedupEvent {
   @@index([orgId])
   @@index([candidateTaskId])
   @@map("dedup_events")
+}
+
+// ─── Auth Tokens (Module 03) ──────────────────────────────────────────
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String    @map("user_id")
+  family    String    // rotation group: all rotated tokens share a family UUID
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([family])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
 }

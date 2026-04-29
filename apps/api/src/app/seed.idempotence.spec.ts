@@ -14,7 +14,7 @@ describe('Seed data tests', () => {
     prisma = createTestPrismaClient();
     dbAvailable = await isDbReachable(prisma);
     if (!dbAvailable) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Database not reachable — skipping seed tests');
     }
   });

@@ -22,7 +22,7 @@ describe('Repository authorization scope tests', () => {
     taskRepo = new TaskRepository(prisma);
     dbAvailable = await isDbReachable(prisma);
     if (!dbAvailable) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Database not reachable — skipping repo scope tests');
       return;
     }

@@ -15,7 +15,7 @@ describe('Database smoke tests', () => {
     client = createTestPrismaClient();
     dbAvailable = await isDbReachable(client);
     if (!dbAvailable) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Database not reachable — skipping DB smoke tests');
     }
   });

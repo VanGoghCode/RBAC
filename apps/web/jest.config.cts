@@ -13,6 +13,11 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  moduleNameMapper: {
+    '^@task-ai/shared/types$': '<rootDir>/../../libs/shared/types/src/index.ts',
+    '^@task-ai/auth$': '<rootDir>/../../libs/auth/src/index.ts',
+    '^@task-ai/tasks$': '<rootDir>/../../libs/tasks/src/index.ts',
+  },
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',
