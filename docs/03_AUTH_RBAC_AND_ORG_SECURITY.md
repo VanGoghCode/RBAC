@@ -180,7 +180,7 @@ Owner Expectations: Users can log in, remain logged in through refresh, and are 
 
 ## [ ] Human QA Checklist
 
-- [ ] Login as Owner, Admin, Member, and Viewer.
+- [x] Login as Owner, Admin, Member, and Viewer.
 - [ ] Verify each role sees only expected navigation and actions.
 - [ ] Try calling protected API without token.
 - [ ] Try editing another org's task with a copied task ID.

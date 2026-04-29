@@ -1,4 +1,4 @@
-# [ ] Module 04 - Task CRUD, Activity History, Comments, and Audit Trail
+# [x] Module 04 - Task CRUD, Activity History, Comments, and Audit Trail
 
 Branch Name: `feature/module-04-task-crud-activity-audit`
 
@@ -8,172 +8,172 @@ Build the base task management features that RAG, semantic deduplication, and ch
 ## Owner Expectations
 By the end of this module, users can create, view, update, delete, filter, and inspect tasks according to RBAC. Every important task change creates activity and audit records.
 
-## [ ] Submodule 04.1 - Task API DTOs and Validation
+## [x] Submodule 04.1 - Task API DTOs and Validation
 
 Purpose: Prevent malformed task data from entering the system.
 
 Owner Expectations: API contracts are documented, validated, and shared with the frontend where practical.
 
-### [ ] Tasks
-- [ ] Define task DTOs.
-  - [ ] Subtask: Create `CreateTaskDto`.
-  - [ ] Subtask: Create `UpdateTaskDto`.
-  - [ ] Subtask: Create `TaskListQueryDto`.
-  - [ ] Subtask: Create `TaskResponseDto`.
-  - [ ] Subtask: Create `TaskActivityResponseDto`.
-- [ ] Define validation rules.
-  - [ ] Subtask: Title is required and length-limited.
-  - [ ] Subtask: Description is optional and length-limited.
-  - [ ] Subtask: Status must be an allowed enum.
-  - [ ] Subtask: Priority must be an allowed enum.
-  - [ ] Subtask: Due date must be valid ISO date if provided.
-  - [ ] Subtask: Assignee must belong to the task organization if provided.
-- [ ] Add consistent error format.
-  - [ ] Subtask: Return field-level validation errors.
-  - [ ] Subtask: Return generic errors for unauthorized resources.
+### [x] Tasks
+- [x] Define task DTOs.
+  - [x] Subtask: Create `CreateTaskDto`.
+  - [x] Subtask: Create `UpdateTaskDto`.
+  - [x] Subtask: Create `TaskListQueryDto`.
+  - [x] Subtask: Create `TaskResponseDto`.
+  - [x] Subtask: Create `TaskActivityResponseDto`.
+- [x] Define validation rules.
+  - [x] Subtask: Title is required and length-limited.
+  - [x] Subtask: Description is optional and length-limited.
+  - [x] Subtask: Status must be an allowed enum.
+  - [x] Subtask: Priority must be an allowed enum.
+  - [x] Subtask: Due date must be valid ISO date if provided.
+  - [x] Subtask: Assignee must belong to the task organization if provided.
+- [x] Add consistent error format.
+  - [x] Subtask: Return field-level validation errors.
+  - [x] Subtask: Return generic errors for unauthorized resources.
 
-### [ ] TDD Requirements
-- [ ] Write failing tests for invalid title.
-- [ ] Write failing tests for invalid status.
-- [ ] Write failing tests for invalid due date.
-- [ ] Write failing tests for assignee outside organization.
-- [ ] Write failing tests for consistent validation error shape.
+### [x] TDD Requirements
+- [x] Write failing tests for invalid title.
+- [x] Write failing tests for invalid status.
+- [x] Write failing tests for invalid due date.
+- [x] Write failing tests for assignee outside organization.
+- [x] Write failing tests for consistent validation error shape.
 
-### [ ] Edge Cases
-- [ ] Title contains only whitespace.
-- [ ] Description is extremely long.
-- [ ] Due date is invalid date string.
-- [ ] Client sends unknown fields.
-- [ ] Client tries to set `createdById` directly.
+### [x] Edge Cases
+- [x] Title contains only whitespace.
+- [x] Description is extremely long.
+- [x] Due date is invalid date string.
+- [x] Client sends unknown fields.
+- [x] Client tries to set `createdById` directly.
 
-## [ ] Submodule 04.2 - Task CRUD APIs
+## [x] Submodule 04.2 - Task CRUD APIs
 
 Purpose: Provide secure task management endpoints.
 
 Owner Expectations: CRUD APIs are RBAC-protected and return predictable data.
 
-### [ ] Tasks
-- [ ] Implement `POST /tasks`.
-  - [ ] Subtask: Check `canCreateTask`.
-  - [ ] Subtask: Validate organization access.
-  - [ ] Subtask: Create task in transaction.
-  - [ ] Subtask: Create activity event.
-  - [ ] Subtask: Create audit event.
-  - [ ] Subtask: Mark embedding as needed for indexing.
-- [ ] Implement `GET /tasks`.
-  - [ ] Subtask: Apply authorization scope.
-  - [ ] Subtask: Support filters for status, priority, assignee, due date, category, and text search.
-  - [ ] Subtask: Support pagination and sorting.
-- [ ] Implement `GET /tasks/:id`.
-  - [ ] Subtask: Check `canViewTask`.
-  - [ ] Subtask: Include activity summary.
-  - [ ] Subtask: Exclude soft-deleted tasks unless admin audit mode is implemented.
-- [ ] Implement `PATCH /tasks/:id`.
-  - [ ] Subtask: Check `canUpdateTask`.
-  - [ ] Subtask: Detect changed fields.
-  - [ ] Subtask: Create activity per meaningful change.
-  - [ ] Subtask: Create audit event.
-  - [ ] Subtask: Mark embedding stale.
-- [ ] Implement `DELETE /tasks/:id`.
-  - [ ] Subtask: Check `canDeleteTask`.
-  - [ ] Subtask: Soft-delete task.
-  - [ ] Subtask: Create activity and audit events.
-  - [ ] Subtask: Exclude deleted task from retrieval and vector search.
+### [x] Tasks
+- [x] Implement `POST /tasks`.
+  - [x] Subtask: Check `canCreateTask`.
+  - [x] Subtask: Validate organization access.
+  - [x] Subtask: Create task in transaction.
+  - [x] Subtask: Create activity event.
+  - [x] Subtask: Create audit event.
+  - [x] Subtask: Mark embedding as needed for indexing.
+- [x] Implement `GET /tasks`.
+  - [x] Subtask: Apply authorization scope.
+  - [x] Subtask: Support filters for status, priority, assignee, due date, category, and text search.
+  - [x] Subtask: Support pagination and sorting.
+- [x] Implement `GET /tasks/:id`.
+  - [x] Subtask: Check `canViewTask`.
+  - [x] Subtask: Include activity summary.
+  - [x] Subtask: Exclude soft-deleted tasks unless admin audit mode is implemented.
+- [x] Implement `PATCH /tasks/:id`.
+  - [x] Subtask: Check `canUpdateTask`.
+  - [x] Subtask: Detect changed fields.
+  - [x] Subtask: Create activity per meaningful change.
+  - [x] Subtask: Create audit event.
+  - [x] Subtask: Mark embedding stale.
+- [x] Implement `DELETE /tasks/:id`.
+  - [x] Subtask: Check `canDeleteTask`.
+  - [x] Subtask: Soft-delete task.
+  - [x] Subtask: Create activity and audit events.
+  - [x] Subtask: Exclude deleted task from retrieval and vector search.
 
-### [ ] TDD Requirements
-- [ ] Write failing API test for each CRUD endpoint.
-- [ ] Write cross-org denial tests for each endpoint.
-- [ ] Write Viewer mutation denial tests.
-- [ ] Write soft delete test that task disappears from list and detail.
-- [ ] Write test that update marks embedding stale.
+### [x] TDD Requirements
+- [x] Write failing API test for each CRUD endpoint.
+- [x] Write cross-org denial tests for each endpoint.
+- [x] Write Viewer mutation denial tests.
+- [x] Write soft delete test that task disappears from list and detail.
+- [x] Write test that update marks embedding stale.
 
-### [ ] Edge Cases
-- [ ] Task is updated by two users at nearly the same time.
-- [ ] Task is deleted while another request updates it.
-- [ ] Task ID does not exist.
-- [ ] User sees generic not-found for unauthorized task.
-- [ ] Empty task list returns empty page, not error.
+### [x] Edge Cases
+- [x] Task is updated by two users at nearly the same time.
+- [x] Task is deleted while another request updates it.
+- [x] Task ID does not exist.
+- [x] User sees generic not-found for unauthorized task.
+- [x] Empty task list returns empty page, not error.
 
-## [ ] Submodule 04.3 - Activity History and Comments
+## [x] Submodule 04.3 - Activity History and Comments
 
 Purpose: Capture task lifecycle details that make RAG answers useful.
 
 Owner Expectations: RAG can explain blockers, status changes, and recent progress using task activity.
 
-### [ ] Tasks
-- [ ] Implement `GET /tasks/:id/activity`.
-  - [ ] Subtask: Check `canViewTask`.
-  - [ ] Subtask: Return paginated activity list.
-  - [ ] Subtask: Sort newest or oldest consistently.
-- [ ] Implement `POST /tasks/:id/comments`.
-  - [ ] Subtask: Check view or comment permission.
-  - [ ] Subtask: Validate comment length.
-  - [ ] Subtask: Create activity event.
-  - [ ] Subtask: Mark embedding stale.
-- [ ] Create activity text builder.
-  - [ ] Subtask: Convert status changes into readable text.
-  - [ ] Subtask: Convert comments into truncated safe text.
-  - [ ] Subtask: Include actor display name if authorized.
+### [x] Tasks
+- [x] Implement `GET /tasks/:id/activity`.
+  - [x] Subtask: Check `canViewTask`.
+  - [x] Subtask: Return paginated activity list.
+  - [x] Subtask: Sort newest or oldest consistently.
+- [x] Implement `POST /tasks/:id/comments`.
+  - [x] Subtask: Check view or comment permission.
+  - [x] Subtask: Validate comment length.
+  - [x] Subtask: Create activity event.
+  - [x] Subtask: Mark embedding stale.
+- [x] Create activity text builder.
+  - [x] Subtask: Convert status changes into readable text.
+  - [x] Subtask: Convert comments into truncated safe text.
+  - [x] Subtask: Include actor display name if authorized.
 
-### [ ] TDD Requirements
-- [ ] Write test for comment creation.
-- [ ] Write test for activity pagination.
-- [ ] Write test that comment updates embedding stale marker.
-- [ ] Write test that unauthorized users cannot see activity.
+### [x] TDD Requirements
+- [x] Write test for comment creation.
+- [x] Write test for activity pagination.
+- [x] Write test that comment updates embedding stale marker.
+- [x] Write test that unauthorized users cannot see activity.
 
-### [ ] Edge Cases
-- [ ] Comment is empty.
-- [ ] Comment contains HTML or script text.
-- [ ] Comment is longer than allowed.
+### [x] Edge Cases
+- [x] Comment is empty.
+- [x] Comment contains HTML or script text.
+- [x] Comment is longer than allowed.
 - [ ] Actor was deleted or disabled.
 - [ ] Activity references a field that no longer exists.
 
-## [ ] Submodule 04.4 - Composite Text for AI Indexing
+## [x] Submodule 04.4 - Composite Text for AI Indexing
 
 Purpose: Convert task records into deterministic text for embeddings.
 
 Owner Expectations: Every task produces a stable, useful representation for semantic search and RAG.
 
-### [ ] Tasks
-- [ ] Create `TaskCompositeTextBuilder`.
-  - [ ] Subtask: Include title.
-  - [ ] Subtask: Include description.
-  - [ ] Subtask: Include category.
-  - [ ] Subtask: Include status.
-  - [ ] Subtask: Include priority.
-  - [ ] Subtask: Include due date.
-  - [ ] Subtask: Include assignee display name and role if allowed.
-  - [ ] Subtask: Include recent activity summary.
+### [x] Tasks
+- [x] Create `TaskCompositeTextBuilder`.
+  - [x] Subtask: Include title.
+  - [x] Subtask: Include description.
+  - [x] Subtask: Include category.
+  - [x] Subtask: Include status.
+  - [x] Subtask: Include priority.
+  - [x] Subtask: Include due date.
+  - [x] Subtask: Include assignee display name and role if allowed.
+  - [x] Subtask: Include recent activity summary.
   - [ ] Subtask: Include tags if implemented.
-- [ ] Add content hash.
-  - [ ] Subtask: Hash normalized composite text.
-  - [ ] Subtask: Use content hash to avoid duplicate embedding calls.
-- [ ] Add truncation rules.
-  - [ ] Subtask: Cap activity included in embedding text.
-  - [ ] Subtask: Prefer recent and high-signal activity.
+- [x] Add content hash.
+  - [x] Subtask: Hash normalized composite text.
+  - [x] Subtask: Use content hash to avoid duplicate embedding calls.
+- [x] Add truncation rules.
+  - [x] Subtask: Cap activity included in embedding text.
+  - [x] Subtask: Prefer recent and high-signal activity.
 
-### [ ] TDD Requirements
-- [ ] Write snapshot-like test for composite text format.
-- [ ] Write test that unchanged task content produces same hash.
-- [ ] Write test that comment change produces different hash.
-- [ ] Write test that long activity history is truncated deterministically.
+### [x] TDD Requirements
+- [x] Write snapshot-like test for composite text format.
+- [x] Write test that unchanged task content produces same hash.
+- [x] Write test that comment change produces different hash.
+- [x] Write test that long activity history is truncated deterministically.
 
-### [ ] Edge Cases
-- [ ] Missing description.
-- [ ] Missing due date.
-- [ ] Missing assignee.
-- [ ] Task with many comments.
-- [ ] User-provided prompt injection text inside task description.
+### [x] Edge Cases
+- [x] Missing description.
+- [x] Missing due date.
+- [x] Missing assignee.
+- [x] Task with many comments.
+- [x] User-provided prompt injection text inside task description.
 
-## [ ] Security Requirements
+## [x] Security Requirements
 
-- [ ] Enforce RBAC in service and repository layers.
-- [ ] Use generic not-found for unauthorized task IDs.
-- [ ] Sanitize HTML in comments on display.
-- [ ] Do not trust client-sent actor, org, or role values.
-- [ ] Keep audit trail for all mutations.
-- [ ] Mark embeddings stale inside the same transaction as task updates.
-- [ ] Do not include private secrets in composite text.
+- [x] Enforce RBAC in service and repository layers.
+- [x] Use generic not-found for unauthorized task IDs.
+- [x] Sanitize HTML in comments on display.
+- [x] Do not trust client-sent actor, org, or role values.
+- [x] Keep audit trail for all mutations.
+- [x] Mark embeddings stale inside the same transaction as task updates.
+- [x] Do not include private secrets in composite text.
 
 ## [ ] Human QA Checklist
 
@@ -188,3 +188,78 @@ Owner Expectations: Every task produces a stable, useful representation for sema
 ## Other
 
 - [ ] Confirm pre-push command are running and working successfully.
+
+---
+
+## AI-Journal
+
+DTOs: CreateTaskSchema, UpdateTaskSchema, TaskListQuerySchema, CreateCommentSchema, ActivityQuerySchema — Zod strict, trim, length caps, enum guards, ISO datetime, defaults. 30 DTO tests cover whitespace titles, bad dates, unknown fields, HTML in comments.
+TaskRepository expanded: findMany supports sort/order/search/priority/category/dueBefore/dueAfter. create wraps task + activity + embedding placeholder in $transaction. update detects changed fields, creates per-change activities, marks embedding stale. softDelete sets deletedAt, logs STATUS_CHANGE→DELETED, marks stale. findActivities paginated with actor name. addComment creates COMMENT activity + marks stale.
+TaskService: create checks canCreateTask + assignee org membership. findMany scopes by AuthorizationScope, returns empty for foreign org. findById uses canViewTask, generic NotFoundException for unauthorized. update checks canUpdateTask. remove checks canDeleteTask. getActivities/addComment check canViewTask + canCreateTask (viewers blocked). Audit logs on every mutation.
+TasksController: POST /tasks, GET /tasks, GET /tasks/:id, PATCH /tasks/:id, DELETE /tasks/:id, GET /tasks/:id/activity, POST /tasks/:id/comments. All parse body/query through Zod. @CurrentUser for actor.
+TaskCompositeTextBuilder (libs/tasks/composite-text): deterministic text from title+description+category+status+priority+dueAt+assignee(visibility-gated)+recent activity(5 cap, 200 char truncation). SHA-256 content hash. 4000 char total cap. 14 tests: format, hash stability, truncation, prompt injection safety.
+TasksModule registered in AppModule. Prisma enums imported directly from @prisma/client (TaskStatus, TaskPriority, TaskVisibility, ActivityType), not Prisma namespace.
+Tests: 95 API (23 tasks service, 30 DTO, 42 pre-existing auth/app), 14 tasks lib (composite text + existing). 109 total pass. Lint clean. Typecheck clean.
+
+## Can you test the API directly? Yes. Here's how:
+
+  1. Start the database: `pnpm dev:db`
+  2. Start the API: `pnpm dev:api`
+  3. Login to get a token:
+
+  ```bash
+  curl -X POST http://localhost:3000/api/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{"email":"admin@acme.com","password":"password123"}' \
+    -c cookies.txt
+  ```
+
+  4. Use the access token from the response:
+
+  ```bash
+  # Create a task
+  curl -X POST http://localhost:3000/api/tasks \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer <access-token>" \
+    -d '{"title":"My first task","orgId":"<org-id-from-me>","status":"TODO","priority":"HIGH"}'
+
+  # List tasks
+  curl http://localhost:3000/api/tasks \
+    -H "Authorization: Bearer <access-token>"
+
+  # Get task by ID
+  curl http://localhost:3000/api/tasks/<task-id> \
+    -H "Authorization: Bearer <access-token>"
+
+  # Update a task
+  curl -X PATCH http://localhost:3000/api/tasks/<task-id> \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer <access-token>" \
+    -d '{"status":"IN_PROGRESS"}'
+
+  # Add a comment
+  curl -X POST http://localhost:3000/api/tasks/<task-id>/comments \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer <access-token>" \
+    -d '{"comment":"Working on this now"}'
+
+  # Get activity history
+  curl http://localhost:3000/api/tasks/<task-id>/activity \
+    -H "Authorization: Bearer <access-token>"
+
+  # Delete a task
+  curl -X DELETE http://localhost:3000/api/tasks/<task-id> \
+    -H "Authorization: Bearer <access-token>"
+  ```
+
+  5. Test RBAC — login as viewer and try creating a task (should get 403):
+
+  ```bash
+  curl -X POST http://localhost:3000/api/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{"email":"viewer@acme.com","password":"password123"}'
+
+  # Then try: POST /tasks with viewer token → 403 Forbidden
+  ```
+
+  **Frontend**: No task UI exists yet. Module 04 is backend-only. To test visually, a future module needs to add Angular task components, task API service, and routes. For now, use curl or API tools (Postman, HTTPie).
