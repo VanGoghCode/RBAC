@@ -41,7 +41,7 @@ export const authInterceptor: HttpInterceptorFn = (
   const token = authState.getAccessToken();
   if (token && req.url.startsWith('/api/')) {
     authReq = authReq.clone({
-      setHeaders: { ...authReq.headers, Authorization: `Bearer ${token}` },
+      setHeaders: { Authorization: `Bearer ${token}` },
     });
   }
 
