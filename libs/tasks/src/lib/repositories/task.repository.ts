@@ -360,6 +360,6 @@ export class TaskRepository {
   private isAdminOrOwner(scope: AuthorizationScope, orgId?: string): boolean {
     if (!orgId) return false;
     const roles = scope.rolesByOrg[orgId] ?? [];
-    return roles.some((r) => r === 'admin' || r === 'owner');
+    return roles.some((r) => r === 'admin' || r === 'owner' || r === 'manager');
   }
 }

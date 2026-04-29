@@ -1,0 +1,162 @@
+/* ─── Layout Shell ─────────────────────────────────────────────── */
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+/* ─── Top Bar ──────────────────────────────────────────────────── */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-height);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-md);
+  z-index: 100;
+  gap: var(--space-sm);
+}
+
+.topbar-menu-btn {
+  background: none;
+  border: none;
+  font-size: var(--text-lg);
+  cursor: pointer;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+}
+.topbar-menu-btn:hover { background: var(--color-bg-hover); }
+
+.topbar-brand {
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-primary);
+}
+
+.topbar-org {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-left: var(--space-sm);
+}
+
+.topbar-spacer { flex: 1; }
+
+.topbar-user { position: relative; }
+
+.topbar-user-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.topbar-user-btn:hover { background: var(--color-bg-hover); }
+
+.topbar-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-xs);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  min-width: 140px;
+  z-index: 200;
+}
+
+.topbar-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.topbar-dropdown-item:hover { background: var(--color-bg-hover); }
+
+/* ─── Sidebar ──────────────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: var(--topbar-height);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--color-bg-muted);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-md);
+  z-index: 90;
+  transform: translateX(-100%);
+  transition: transform var(--transition-fast);
+}
+
+.sidebar.open { transform: translateX(0); }
+
+@media (min-width: 769px) {
+  .sidebar { transform: translateX(0); }
+}
+
+.sidebar-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.sidebar-nav a:hover {
+  background: var(--color-bg-hover);
+  text-decoration: none;
+}
+.sidebar-nav a.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: var(--topbar-height);
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 80;
+  }
+}
+
+/* ─── Main Content ─────────────────────────────────────────────── */
+.main-content {
+  padding-top: var(--topbar-height);
+  min-height: 100vh;
+}
+
+.main-content.with-sidebar {
+  padding-left: var(--sidebar-width);
+}
+
+@media (max-width: 768px) {
+  .main-content.with-sidebar { padding-left: 0; }
+}

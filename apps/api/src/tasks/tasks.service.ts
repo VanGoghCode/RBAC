@@ -38,6 +38,11 @@ export class TasksService {
 
     // Validate assignee belongs to org
     if (dto.assigneeId) {
+      // MEMBER can only assign to self
+      if (!this.permission.canAssignToOther(scope, dto.orgId) && dto.assigneeId !== userId) {
+        throw new ForbiddenException('Members can only assign tasks to themselves');
+      }
+
       const membership = await this.prisma.orgMembership.findFirst({
         where: { userId: dto.assigneeId, orgId: dto.orgId },
       });
@@ -121,6 +126,11 @@ export class TasksService {
 
     // Validate assignee belongs to org if changing
     if (dto.assigneeId) {
+      // MEMBER can only assign to self
+      if (!this.permission.canAssignToOther(scope, task.orgId) && dto.assigneeId !== userId) {
+        throw new ForbiddenException('Members can only assign tasks to themselves');
+      }
+
       const membership = await this.prisma.orgMembership.findFirst({
         where: { userId: dto.assigneeId, orgId: task.orgId },
       });

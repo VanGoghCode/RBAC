@@ -10,7 +10,11 @@ import { TasksService } from './tasks.service';
   controllers: [TasksController],
   providers: [
     TasksService,
-    AuthorizationScopeService,
+    {
+      provide: AuthorizationScopeService,
+      useFactory: (prisma: PrismaService) => new AuthorizationScopeService(prisma),
+      inject: [PrismaService],
+    },
     {
       provide: TaskRepository,
       useFactory: (prisma: PrismaService) => new TaskRepository(prisma),

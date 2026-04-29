@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   Controller,
   Post,
@@ -8,12 +9,16 @@ import {
   HttpCode,
   HttpStatus,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { Public } from './decorators';
 import { CurrentUser } from './decorators';
 import { LoginSchema } from './dto';
+import { CsrfGuard } from './guards/csrf.guard';
+import { ThrottlerBehindProxyGuard } from './guards/throttler-behind-proxy.guard';
 import type { AuthenticatedUser, LoginResponse } from '@task-ai/shared/types';
 
 const REFRESH_COOKIE_OPTIONS = {
@@ -24,13 +29,23 @@ const REFRESH_COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
+const CSRF_COOKIE_OPTIONS = {
+  httpOnly: false,
+  secure: process.env['NODE_ENV'] === 'production',
+  sameSite: 'strict' as const,
+  path: '/api/auth',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
 @Controller('auth')
+@UseGuards(ThrottlerBehindProxyGuard, CsrfGuard)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   async login(
     @Body() body: unknown,
     @Req() req: Request,
@@ -43,6 +58,7 @@ export class AuthController {
     const result = await this.authService.login(dto, ipHash, userAgentHash);
 
     res.cookie('refresh_token', result.refreshToken, REFRESH_COOKIE_OPTIONS);
+    res.cookie('csrf_token', randomUUID(), CSRF_COOKIE_OPTIONS);
 
     return { accessToken: result.accessToken, user: result.user };
   }
@@ -50,6 +66,7 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -74,6 +91,7 @@ export class AuthController {
     const token = req.cookies?.['refresh_token'] as string | undefined;
     await this.authService.logout(user.userId, token);
     res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
+    res.clearCookie('csrf_token', { path: '/api/auth' });
     return { success: true };
   }
 

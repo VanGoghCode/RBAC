@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { Router, CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthState } from './auth.state';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const authState = inject(AuthState);
   const router = inject(Router);
 
@@ -10,6 +10,7 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
+  sessionStorage.setItem('returnUrl', state.url);
   router.navigate(['/login']);
   return false;
 };

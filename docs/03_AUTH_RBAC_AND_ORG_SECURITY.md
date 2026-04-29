@@ -158,7 +158,7 @@ Owner Expectations: Users can log in, remain logged in through refresh, and are 
 - [x] Write component test for login form validation.
 - [x] Write route guard test for unauthenticated navigation.
 - [x] Write auth state test for refresh failure.
-- [ ] Write E2E login/logout flow.
+- [x] Write E2E login/logout flow.
 
 ### [x] Edge Cases
 - [x] User refreshes page during an API request.
@@ -169,11 +169,11 @@ Owner Expectations: Users can log in, remain logged in through refresh, and are 
 ## [x] Security Requirements
 
 - [x] Hash passwords with Argon2id or bcrypt.
-- [ ] Rate-limit login and refresh endpoints.
+- [x] Rate-limit login and refresh endpoints.
 - [x] Use HttpOnly refresh cookies.
 - [x] Use Secure cookies in HTTPS environments.
 - [x] Use SameSite cookie policy.
-- [ ] Add CSRF protection for cookie-authenticated state-changing flows.
+- [x] Add CSRF protection for cookie-authenticated state-changing flows.
 - [x] Use generic login error messages.
 - [x] Do not return authorization decisions from the LLM.
 - [x] Re-check authorization inside services, not only in Angular.
@@ -205,6 +205,10 @@ Dependencies added: bcryptjs, @nestjs/jwt, @nestjs/passport, passport-jwt, cooki
 Tests: 51 API (17 auth service, 6 auth controller, 4 password, 37 permission, 6 scope, pre-existing schema/repo/seed), 10 web. All pass. Lint clean. Typecheck clean.
 
 Bugfix: SCRAM-SERVER-FIRST-MESSAGE error on login. Root cause: DB had no tables (migrations/seed never ran after fresh Docker volume). pg adapter tried query → SCRAM auth failed because no schema existed. Fix: ran `pnpm db:init` → `pnpm db:generate` → `pnpm db:push -- --accept-data-loss` → `pnpm db:seed`. API restart cleared stale connection error. Lesson: always run full setup sequence after `dev:db` on fresh volume.
+
+Rate limiting: installed @nestjs/throttler. Created ThrottlerBehindProxyGuard (extends ThrottlerGuard, uses X-Forwarded-For). Login throttled to 5 req/min, refresh to 20 req/min. Applied via @UseGuards at AuthController class level.
+CSRF protection: double-submit cookie pattern. CsrfGuard validates X-CSRF-Token header matches csrf_token cookie on mutating auth requests (skips GET, HEAD, OPTIONS, login). Login sets non-httpOnly csrf_token cookie. Logout clears it. Angular interceptor reads cookie and attaches header.
+E2E tests: Playwright auth.spec.ts (login success, login failure, logout, unauthenticated redirect). API E2E auth.spec.ts (login valid/invalid, me with/without token, logout, CSRF reject/allow).
 
 ## Can you test the frontend? Yes. Here's how:
 

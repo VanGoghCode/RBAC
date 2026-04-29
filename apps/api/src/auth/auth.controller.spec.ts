@@ -1,5 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import type { UserProfileResponse } from '@task-ai/shared/types';
@@ -30,6 +31,7 @@ describe('AuthController', () => {
     };
 
     const module = await Test.createTestingModule({
+      imports: [ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }])],
       controllers: [AuthController],
       providers: [{ provide: AuthService, useValue: service }],
     }).compile();
@@ -37,7 +39,7 @@ describe('AuthController', () => {
     controller = module.get(AuthController);
   });
 
-  it('login returns access token and sets cookie', async () => {
+  it('login returns access token and sets cookies', async () => {
     service.login.mockResolvedValue({
       accessToken: 'at',
       refreshToken: 'rt',
@@ -56,6 +58,11 @@ describe('AuthController', () => {
       'refresh_token',
       'rt',
       expect.objectContaining({ httpOnly: true }),
+    );
+    expect(res.cookie).toHaveBeenCalledWith(
+      'csrf_token',
+      expect.any(String),
+      expect.objectContaining({ httpOnly: false }),
     );
   });
 
@@ -90,7 +97,7 @@ describe('AuthController', () => {
     ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('logout clears cookie', async () => {
+  it('logout clears cookies', async () => {
     service.logout.mockResolvedValue(undefined);
     const res = { clearCookie: jest.fn() } as any;
 
@@ -101,7 +108,8 @@ describe('AuthController', () => {
     );
 
     expect(result.success).toBe(true);
-    expect(res.clearCookie).toHaveBeenCalled();
+    expect(res.clearCookie).toHaveBeenCalledWith('refresh_token', { path: '/api/auth/refresh' });
+    expect(res.clearCookie).toHaveBeenCalledWith('csrf_token', { path: '/api/auth' });
   });
 
   it('me returns user profile', async () => {

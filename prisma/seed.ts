@@ -80,12 +80,23 @@ async function main() {
     },
   });
 
+  const managerUser = await prisma.user.upsert({
+    where: { email: 'manager@acme.com' },
+    update: { passwordHash: hashPassword('password123') },
+    create: {
+      email: 'manager@acme.com',
+      name: 'Eve Manager',
+      passwordHash: hashPassword('password123'),
+    },
+  });
+
   // ─── Memberships ─────────────────────────────────────────────
   const membershipData = [
     { userId: ownerUser.id, orgId: acmeCorp.id, role: 'owner' },
     { userId: ownerUser.id, orgId: acmeEng.id, role: 'owner' },
     { userId: ownerUser.id, orgId: acmeProduct.id, role: 'owner' },
     { userId: adminUser.id, orgId: acmeEng.id, role: 'admin' },
+    { userId: managerUser.id, orgId: acmeEng.id, role: 'manager' },
     { userId: viewerUser.id, orgId: acmeEng.id, role: 'viewer' },
     { userId: memberUser.id, orgId: acmeEng.id, role: 'member' },
   ];

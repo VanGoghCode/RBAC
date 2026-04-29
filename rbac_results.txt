@@ -1,0 +1,94 @@
+[C-O-PUB] PASS | Exp: 201 | Got: 201 | Owner>PUBLIC id=80247811 
+[C-O-PRIV] PASS | Exp: 201 | Got: 201 | Owner>PRIVATE id=f265a507 
+[C-O-ASGN] PASS | Exp: 201 | Got: 201 | Owner>ASSIGNED_ONLY>assignee id=d099f065 
+[C-A-PUB] PASS | Exp: 201 | Got: 201 | Admin>PUBLIC id=2daf5b34 
+[C-A-PRIV] PASS | Exp: 201 | Got: 201 | Admin>PRIVATE id=7f3265e8 
+[C-M-PUB] PASS | Exp: 201 | Got: 201 | Manager>PUBLIC id=da6063b9 
+[C-M-ASGN] PASS | Exp: 201 | Got: 201 | Manager>PUBLIC>assignee id=b740c953 
+[C-M-ASGN-V] PASS | Exp: 201 | Got: 201 | Manager>ASSIGNED_ONLY>assignee id=0327e3fd 
+[C-ME-PUB] PASS | Exp: 201 | Got: 201 | Member>PUBLIC id=28a0eb6a 
+[C-ME-SELF] PASS | Exp: 201 | Got: 201 | Member>PUBLIC>assignee id=2aee0716 
+[C-ME-OTHER] PASS | Exp: 403 | Got: 403 | Member>PUBLIC>assignee  Members can only assign tasks to themselves
+[C-ME-PRIV] PASS | Exp: 201 | Got: 201 | Member>PRIVATE id=25999682 
+[C-V] PASS | Exp: 403 | Got: 403 | Viewer>PUBLIC  You cannot create tasks in this organization
+[C-XORG] FAIL | Exp: 403 | Got: 201 | Member>PUBLIC id=238d619d 
+[R-PUB-O-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PUB-O
+[R-PUB-O-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PUB-O
+[R-PUB-O-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PUB-O
+[R-PUB-O-Member] PASS | Exp: 200 | Got: 200 | Member reads R-PUB-O
+[R-PUB-O-Viewer] PASS | Exp: 200 | Got: 200 | Viewer reads R-PUB-O
+[R-PRIV-O-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PRIV-O
+[R-PRIV-O-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PRIV-O
+[R-PRIV-O-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PRIV-O
+[R-PRIV-O-Member] PASS | Exp: 404 | Got: 404 | Member reads R-PRIV-O
+[R-PRIV-O-Viewer] PASS | Exp: 404 | Got: 404 | Viewer reads R-PRIV-O
+[R-ASGN-O-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-ASGN-O
+[R-ASGN-O-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-ASGN-O
+[R-ASGN-O-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-ASGN-O
+[R-ASGN-O-Member] PASS | Exp: 200 | Got: 200 | Member reads R-ASGN-O
+[R-ASGN-O-Viewer] PASS | Exp: 404 | Got: 404 | Viewer reads R-ASGN-O
+[R-PUB-A-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PUB-A
+[R-PUB-A-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PUB-A
+[R-PUB-A-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PUB-A
+[R-PUB-A-Member] PASS | Exp: 200 | Got: 200 | Member reads R-PUB-A
+[R-PUB-A-Viewer] PASS | Exp: 200 | Got: 200 | Viewer reads R-PUB-A
+[R-PRIV-A-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PRIV-A
+[R-PRIV-A-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PRIV-A
+[R-PRIV-A-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PRIV-A
+[R-PRIV-A-Member] PASS | Exp: 404 | Got: 404 | Member reads R-PRIV-A
+[R-PRIV-A-Viewer] PASS | Exp: 404 | Got: 404 | Viewer reads R-PRIV-A
+[R-PUB-M-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PUB-M
+[R-PUB-M-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PUB-M
+[R-PUB-M-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PUB-M
+[R-PUB-M-Member] PASS | Exp: 200 | Got: 200 | Member reads R-PUB-M
+[R-PUB-M-Viewer] PASS | Exp: 200 | Got: 200 | Viewer reads R-PUB-M
+[R-ASGN-M-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-ASGN-M
+[R-ASGN-M-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-ASGN-M
+[R-ASGN-M-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-ASGN-M
+[R-ASGN-M-Member] PASS | Exp: 404 | Got: 404 | Member reads R-ASGN-M
+[R-ASGN-M-Viewer] PASS | Exp: 200 | Got: 200 | Viewer reads R-ASGN-M
+[R-PRIV-ME-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PRIV-ME
+[R-PRIV-ME-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PRIV-ME
+[R-PRIV-ME-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PRIV-ME
+[R-PRIV-ME-Member] PASS | Exp: 200 | Got: 200 | Member reads R-PRIV-ME
+[R-PRIV-ME-Viewer] PASS | Exp: 404 | Got: 404 | Viewer reads R-PRIV-ME
+[R-PUB-ME-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-PUB-ME
+[R-PUB-ME-Admin] PASS | Exp: 200 | Got: 200 | Admin reads R-PUB-ME
+[R-PUB-ME-Mgr] PASS | Exp: 200 | Got: 200 | Mgr reads R-PUB-ME
+[R-PUB-ME-Member] PASS | Exp: 200 | Got: 200 | Member reads R-PUB-ME
+[R-PUB-ME-Viewer] PASS | Exp: 200 | Got: 200 | Viewer reads R-PUB-ME
+[R-XORG-Owner] PASS | Exp: 200 | Got: 200 | Owner reads R-XORG
+[R-XORG-Admin] PASS | Exp: 404 | Got: 404 | Admin reads R-XORG
+[R-XORG-Mgr] PASS | Exp: 404 | Got: 404 | Mgr reads R-XORG
+[R-XORG-Member] PASS | Exp: 404 | Got: 404 | Member reads R-XORG
+[R-XORG-Viewer] PASS | Exp: 404 | Got: 404 | Viewer reads R-XORG
+[R-LIST-V-PRIV] PASS | Exp: 0 | Got: 0 | Viewer no PRIVATE in list
+[R-LIST-V-ASGN] PASS | Exp: 0 | Got: 0 | Viewer only own ASSIGNED_ONLY
+[R-LIST-ME-PRIV] PASS | Exp: 0 | Got: 0 | Member only own PRIVATE
+[R-LIST-ME-ASGN] PASS | Exp: 0 | Got: 0 | Member only assigned ASSIGNED_ONLY
+[U1] PASS | Exp: 200 | Got: 200 | Owner updates Admin Public 
+[U2] PASS | Exp: 200 | Got: 200 | Admin updates Owner Public 
+[U3] PASS | Exp: 200 | Got: 200 | Manager updates Member Public 
+[U4] PASS | Exp: 200 | Got: 200 | Member updates own Public 
+[U5] PASS | Exp: 200 | Got: 200 | Member updates assigned task 
+[U6] PASS | Exp: 404 | Got: 404 | Member updates Admin unassigned Task not found
+[U7] PASS | Exp: 404 | Got: 404 | Viewer updates Task not found
+[U8] PASS | Exp: 200 | Got: 200 | Manager updates Admin Private 
+[U9] PASS | Exp: 404 | Got: 404 | Member updates Owner Private Task not found
+[U10] PASS | Exp: 403 | Got: 403 | Member reassigns to other Members can only assign tasks to themselves
+[U11] PASS | Exp: 200 | Got: 200 | Manager reassigns to Viewer 
+[U12] PASS | Exp: 200 | Got: 200 | Owner changes Member task to PRIVATE 
+[D1] PASS | Exp: 200 | Got: 200 | Owner deletes Admin task 
+[D2] PASS | Exp: 200 | Got: 200 | Member deletes own task 
+[D3] PASS | Exp: 404 | Got: 404 | Member deletes assigned-not-created Task not found
+[D4] PASS | Exp: 404 | Got: 404 | Viewer deletes Task not found
+[D5] PASS | Exp: 200 | Got: 200 | Manager deletes Member Public 
+[D6] PASS | Exp: 200 | Got: 200 | Admin deletes Owner Public 
+[D7] PASS | Exp: 404 | Got: 404 | Double delete Task not found
+[CM1] PASS | Exp: 201 | Got: 201 | Member comments on Public 
+[CM2] PASS | Exp: 403 | Got: 403 | Viewer comments on Public You cannot comment on this task
+[CM3] PASS | Exp: 404 | Got: 404 | Member comments on invisible Task not found
+[CM4] PASS | Exp: 201 | Got: 201 | Owner comments on own Private 
+[CM5] PASS | Exp: 200 | Got: 200 | Viewer reads activity on Public 
+[CM6] PASS | Exp: 200 | Got: 200 | Member reads activity on assigned 
+[CM7] PASS | Exp: 404 | Got: 404 | Member reads activity invisible Task not found

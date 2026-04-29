@@ -1,2 +1,58 @@
-<h1>Welcome web</h1>
-<router-outlet></router-outlet>
+<a class="skip-link" href="#main-content" skipLink>Skip to main content</a>
+
+@if (authState.isAuthenticated()) {
+  <header class="topbar">
+    <button
+      class="topbar-menu-btn"
+      (click)="toggleSidebar()"
+      [attr.aria-label]="sidebarOpen() ? 'Close menu' : 'Open menu'"
+      [attr.aria-expanded]="sidebarOpen()"
+    >
+      <span aria-hidden="true">&#9776;</span>
+    </button>
+    <span class="topbar-brand">TaskAI</span>
+    @if (orgName) {
+      <span class="topbar-org">{{ orgName }}</span>
+    }
+    <div class="topbar-spacer"></div>
+    <div class="topbar-user" [class.open]="userMenuOpen()">
+      <button
+        class="topbar-user-btn"
+        (click)="toggleUserMenu()"
+        (blur)="closeUserMenu()"
+        aria-label="User menu"
+        [attr.aria-expanded]="userMenuOpen()"
+      >
+        {{ displayName }}
+        <span aria-hidden="true">&#9662;</span>
+      </button>
+      @if (userMenuOpen()) {
+        <div class="topbar-dropdown" role="menu">
+          <button role="menuitem" (click)="logout()" class="topbar-dropdown-item">
+            Sign Out
+          </button>
+        </div>
+      }
+    </div>
+  </header>
+
+  <nav
+    class="sidebar"
+    [class.open]="sidebarOpen()"
+    role="navigation"
+    aria-label="Main navigation"
+  >
+    <ul class="sidebar-nav">
+      <li><a routerLink="/dashboard" routerLinkActive="active" (click)="sidebarOpen.set(false)">Dashboard</a></li>
+      <li><a routerLink="/tasks" routerLinkActive="active" (click)="sidebarOpen.set(false)">Tasks</a></li>
+    </ul>
+  </nav>
+
+  @if (sidebarOpen()) {
+    <div class="sidebar-overlay" (click)="sidebarOpen.set(false)" role="presentation"></div>
+  }
+}
+
+<main id="main-content" class="main-content" [class.with-sidebar]="authState.isAuthenticated()">
+  <router-outlet></router-outlet>
+</main>

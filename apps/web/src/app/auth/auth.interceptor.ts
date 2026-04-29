@@ -1,8 +1,13 @@
 import { HttpInterceptorFn, HttpHandlerFn, HttpRequest, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, catchError, switchMap, throwError, from, of } from 'rxjs';
+import { Observable, catchError, switchMap, throwError, from } from 'rxjs';
 import { AuthState } from './auth.state';
+
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -11,16 +16,32 @@ export const authInterceptor: HttpInterceptorFn = (
   const authState = inject(AuthState);
   const router = inject(Router);
 
+  const isAuthEndpoint = req.url.includes('/auth/');
+  const isLogin = req.url.includes('/auth/login');
+  const isRefresh = req.url.includes('/auth/refresh');
+  const isMutating = req.method !== 'GET' && req.method !== 'HEAD';
+
+  let authReq = req;
+
+  // Add CSRF token for mutating auth requests (except login)
+  if (isMutating && isAuthEndpoint && !isLogin) {
+    const csrfToken = getCookie('csrf_token');
+    if (csrfToken) {
+      authReq = authReq.clone({
+        setHeaders: { 'X-CSRF-Token': csrfToken },
+      });
+    }
+  }
+
   // Skip auth header for login/refresh endpoints
-  if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
-    return next(req);
+  if (isLogin || isRefresh) {
+    return next(authReq);
   }
 
   const token = authState.getAccessToken();
-  let authReq = req;
   if (token && req.url.startsWith('/api/')) {
-    authReq = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` },
+    authReq = authReq.clone({
+      setHeaders: { ...authReq.headers, Authorization: `Bearer ${token}` },
     });
   }
 
