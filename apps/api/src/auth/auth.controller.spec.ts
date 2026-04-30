@@ -13,6 +13,7 @@ describe('AuthController', () => {
     logout: jest.Mock;
     getProfile: jest.Mock;
   };
+  let moduleRef: import('@nestjs/testing').TestingModule;
 
   const mockProfile: UserProfileResponse = {
     id: 'user-1',
@@ -30,13 +31,17 @@ describe('AuthController', () => {
       getProfile: jest.fn(),
     };
 
-    const module = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }])],
       controllers: [AuthController],
       providers: [{ provide: AuthService, useValue: service }],
     }).compile();
 
-    controller = module.get(AuthController);
+    controller = moduleRef.get(AuthController);
+  });
+
+  afterEach(async () => {
+    await moduleRef.close();
   });
 
   it('login returns access token and sets cookies', async () => {

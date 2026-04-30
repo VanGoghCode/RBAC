@@ -3,13 +3,18 @@ import { AppService } from './app.service';
 
 describe('AppService', () => {
   let service: AppService;
+  let moduleRef: import('@nestjs/testing').TestingModule;
 
   beforeAll(async () => {
-    const app = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       providers: [AppService],
     }).compile();
 
-    service = app.get<AppService>(AppService);
+    service = moduleRef.get<AppService>(AppService);
+  });
+
+  afterAll(async () => {
+    await moduleRef.close();
   });
 
   describe('getData', () => {

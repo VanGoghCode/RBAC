@@ -20,6 +20,7 @@ import { IntentDetector } from './intent/intent-detector';
  */
 describe('AI Security - RAG Authorization', () => {
   let service: ChatService;
+  let moduleRef: import('@nestjs/testing').TestingModule;
   let scopeService: { resolveScope: jest.Mock };
   let vectorSearch: { search: jest.Mock };
   let guardrailService: {
@@ -107,7 +108,7 @@ describe('AI Security - RAG Authorization', () => {
     };
     taskRepo = { create: jest.fn() };
 
-    const module = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       providers: [
         ChatService,
         { provide: PrismaService, useValue: prisma },
@@ -125,7 +126,11 @@ describe('AI Security - RAG Authorization', () => {
       ],
     }).compile();
 
-    service = module.get(ChatService);
+    service = moduleRef.get(ChatService);
+  });
+
+  afterEach(async () => {
+    await moduleRef.close();
   });
 
   describe('RAG retrieval is scoped by authorization', () => {

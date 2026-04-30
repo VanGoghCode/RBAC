@@ -12,6 +12,7 @@ import { IntentDetector } from './intent/intent-detector';
 
 describe('ChatService Authorization', () => {
   let service: ChatService;
+  let moduleRef: import('@nestjs/testing').TestingModule;
   let scopeService: { resolveScope: jest.Mock };
   let chatRepo: {
     createConversation: jest.Mock;
@@ -112,7 +113,7 @@ describe('ChatService Authorization', () => {
       taskEmbedding: { updateMany: jest.fn().mockResolvedValue({ count: 0 }) },
     };
 
-    const module = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       providers: [
         ChatService,
         { provide: PrismaService, useValue: prisma },
@@ -130,7 +131,11 @@ describe('ChatService Authorization', () => {
       ],
     }).compile();
 
-    service = module.get(ChatService);
+    service = moduleRef.get(ChatService);
+  });
+
+  afterEach(async () => {
+    await moduleRef.close();
   });
 
   describe('cross-org denial', () => {

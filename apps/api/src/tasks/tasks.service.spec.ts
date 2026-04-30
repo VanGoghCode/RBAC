@@ -68,6 +68,8 @@ describe('TasksService', () => {
     updatedAt: new Date(),
   };
 
+  let moduleRef: import('@nestjs/testing').TestingModule;
+
   beforeEach(async () => {
     taskRepo = {
       findById: jest.fn(),
@@ -87,7 +89,7 @@ describe('TasksService', () => {
       executeMerge: jest.fn(),
     };
 
-    const module = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       providers: [
         TasksService,
         { provide: PrismaService, useValue: prisma },
@@ -98,7 +100,11 @@ describe('TasksService', () => {
       ],
     }).compile();
 
-    service = module.get(TasksService);
+    service = moduleRef.get(TasksService);
+  });
+
+  afterEach(async () => {
+    await moduleRef.close();
   });
 
   // ─── Create ──────────────────────────────────────────────────

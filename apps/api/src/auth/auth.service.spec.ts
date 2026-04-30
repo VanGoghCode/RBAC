@@ -29,9 +29,31 @@ describe('AuthService', () => {
     disabledAt: null,
   };
 
+  let originalJwtAccessSecret: string | undefined;
+  let originalJwtRefreshSecret: string | undefined;
+
   beforeAll(async () => {
+    originalJwtAccessSecret = process.env.JWT_ACCESS_SECRET;
+    originalJwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+    process.env.JWT_ACCESS_SECRET = 'test-access-secret';
+    process.env.JWT_REFRESH_SECRET = 'test-refresh-secret';
     mockUser.passwordHash = await hashPassword('password123');
   });
+
+  afterAll(() => {
+    if (originalJwtAccessSecret === undefined) {
+      delete process.env.JWT_ACCESS_SECRET;
+    } else {
+      process.env.JWT_ACCESS_SECRET = originalJwtAccessSecret;
+    }
+    if (originalJwtRefreshSecret === undefined) {
+      delete process.env.JWT_REFRESH_SECRET;
+    } else {
+      process.env.JWT_REFRESH_SECRET = originalJwtRefreshSecret;
+    }
+  });
+
+  let moduleRef: import('@nestjs/testing').TestingModule;
 
   beforeEach(async () => {
     prisma = {
@@ -55,7 +77,7 @@ describe('AuthService', () => {
 
     auditRepo = { log: jest.fn().mockResolvedValue(undefined) };
 
-    const module = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: PrismaService, useValue: prisma },
@@ -64,7 +86,11 @@ describe('AuthService', () => {
       ],
     }).compile();
 
-    service = module.get(AuthService);
+    service = moduleRef.get(AuthService);
+  });
+
+  afterEach(async () => {
+    await moduleRef.close();
   });
 
   // ─── Login ───────────────────────────────────────────────────
