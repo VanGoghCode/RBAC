@@ -31,7 +31,9 @@
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "ai:reindex": "npx tsx scripts/reindex.ts",
+    "dev:reset": "pnpm dev:db:reset && pnpm db:migrate:deploy && pnpm db:seed"
   },
   "private": true,
   "devDependencies": {

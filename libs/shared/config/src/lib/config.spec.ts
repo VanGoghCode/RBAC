@@ -50,6 +50,32 @@ describe('validateApiEnv', () => {
     expect(() => validateApiEnv({ ...validApiEnv, RATE_LIMIT_MAX: '-1' })).toThrow();
   });
 
+  it('should parse new AI config fields with defaults', () => {
+    const result = validateApiEnv(validApiEnv);
+    expect(result.AI_PROVIDER).toBe('bedrock');
+    expect(result.BEDROCK_MAX_OUTPUT_TOKENS).toBe(1024);
+    expect(result.MAX_CHAT_REQUESTS_PER_MINUTE).toBe(10);
+    expect(result.DEDUP_SIMILARITY_THRESHOLD).toBe(0.92);
+  });
+
+  it('should accept custom AI config values', () => {
+    const result = validateApiEnv({
+      ...validApiEnv,
+      AI_PROVIDER: 'bedrock',
+      BEDROCK_MAX_OUTPUT_TOKENS: '2048',
+      MAX_CHAT_REQUESTS_PER_MINUTE: '5',
+      DEDUP_SIMILARITY_THRESHOLD: '0.85',
+    });
+    expect(result.BEDROCK_MAX_OUTPUT_TOKENS).toBe(2048);
+    expect(result.MAX_CHAT_REQUESTS_PER_MINUTE).toBe(5);
+    expect(result.DEDUP_SIMILARITY_THRESHOLD).toBe(0.85);
+  });
+
+  it('should reject DEDUP_SIMILARITY_THRESHOLD outside 0-1', () => {
+    expect(() => validateApiEnv({ ...validApiEnv, DEDUP_SIMILARITY_THRESHOLD: '1.5' })).toThrow();
+    expect(() => validateApiEnv({ ...validApiEnv, DEDUP_SIMILARITY_THRESHOLD: '-0.1' })).toThrow();
+  });
+
   it('should not leak secrets in error messages', () => {
     try {
       validateApiEnv({ ...validApiEnv, DATABASE_URL: '' });
@@ -82,5 +108,15 @@ describe('validateWebEnv', () => {
     const result = validateWebEnv({});
     expect(result.API_BASE_URL).toBe('http://localhost:3000');
     expect(result.FEATURE_AI_CHAT).toBe(true);
+  });
+
+  it('should not expose AWS secrets in web config', () => {
+    const result = validateWebEnv({ API_BASE_URL: 'http://localhost:3000' });
+    const resultStr = JSON.stringify(result);
+    expect(resultStr).not.toContain('AWS');
+    expect(resultStr).not.toContain('SECRET');
+    expect(resultStr).not.toContain('BEDROCK');
+    expect(resultStr).not.toContain('REGION');
+    expect(resultStr).not.toContain('PASSWORD');
   });
 });
