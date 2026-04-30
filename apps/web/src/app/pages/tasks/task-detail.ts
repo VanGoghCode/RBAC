@@ -28,7 +28,7 @@ import { StatusBadge } from '../../shared/status-badge';
     } @else if (task()) {
       <div class="detail-grid">
         <div class="detail-main">
-          <div class="detail-card">
+          <div class="card detail-card">
             <h2 class="detail-title">{{ task()!.title }}</h2>
             @if (task()!.description) {
               <p class="detail-desc">{{ task()!.description }}</p>
@@ -48,22 +48,22 @@ import { StatusBadge } from '../../shared/status-badge';
               @if (task()!.category) {
                 <div class="field-row">
                   <span class="field-label">Category</span>
-                  <span>{{ task()!.category }}</span>
+                  <span class="field-value">{{ task()!.category }}</span>
                 </div>
               }
               <div class="field-row">
                 <span class="field-label">Visibility</span>
-                <span>{{ task()!.visibility }}</span>
+                <span class="field-value">{{ task()!.visibility }}</span>
               </div>
               @if (task()!.dueAt) {
                 <div class="field-row">
                   <span class="field-label">Due</span>
-                  <span [class.overdue]="isOverdue">{{ task()!.dueAt | date:'mediumDate' }}</span>
+                  <span class="field-value" [class.overdue]="isOverdue">{{ task()!.dueAt | date:'mediumDate' }}</span>
                 </div>
               }
               <div class="field-row">
                 <span class="field-label">Created</span>
-                <span>{{ task()!.createdAt | date:'mediumDate' }}</span>
+                <span class="field-value">{{ task()!.createdAt | date:'mediumDate' }}</span>
               </div>
             </div>
 
@@ -78,7 +78,7 @@ import { StatusBadge } from '../../shared/status-badge';
 
         <div class="detail-sidebar">
           <!-- Activity Timeline -->
-          <div class="detail-card">
+          <div class="card">
             <h3 class="card-heading">Activity</h3>
             @if (activities().length === 0) {
               <p class="text-muted text-sm">No activity yet.</p>
@@ -86,9 +86,12 @@ import { StatusBadge } from '../../shared/status-badge';
               <ul class="activity-timeline">
                 @for (act of activities(); track act.id) {
                   <li class="activity-item">
-                    <strong>{{ act.actorName }}</strong>
-                    <span>{{ describeActivity(act) }}</span>
-                    <time class="text-muted text-sm">{{ act.createdAt | date:'shortDate' }}</time>
+                    <div class="activity-dot"></div>
+                    <div class="activity-content">
+                      <span class="activity-actor">{{ act.actorName }}</span>
+                      <span class="activity-action">{{ describeActivity(act) }}</span>
+                      <time class="activity-time">{{ act.createdAt | date:'shortDate' }}</time>
+                    </div>
                   </li>
                 }
               </ul>
@@ -96,10 +99,10 @@ import { StatusBadge } from '../../shared/status-badge';
           </div>
 
           <!-- Comments -->
-          <div class="detail-card">
+          <div class="card">
             <h3 class="card-heading">Add Comment</h3>
             @if (canComment()) {
-              <form (ngSubmit)="submitComment()">
+              <form class="comment-form" (ngSubmit)="submitComment()">
                 <label for="comment-input" class="sr-only">Comment</label>
                 <textarea
                   id="comment-input"
@@ -135,33 +138,120 @@ import { StatusBadge } from '../../shared/status-badge';
   styles: [`
     .detail-grid {
       display: grid;
-      grid-template-columns: 1fr 360px;
+      grid-template-columns: 1fr 380px;
       gap: var(--space-lg);
     }
+
     @media (max-width: 900px) {
       .detail-grid { grid-template-columns: 1fr; }
     }
+
     .detail-card {
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-lg);
       margin-bottom: var(--space-md);
     }
-    .detail-title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-sm); }
-    .detail-desc { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-md); white-space: pre-wrap; }
-    .detail-fields { display: flex; flex-direction: column; gap: var(--space-sm); }
-    .field-row { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--text-sm); }
-    .field-label { color: var(--color-text-muted); min-width: 80px; }
-    .detail-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-lg); }
-    .card-heading { font-size: var(--text-base); font-weight: 600; margin-bottom: var(--space-md); }
-    .activity-timeline { list-style: none; }
-    .activity-item { padding: var(--space-xs) 0; font-size: var(--text-sm); border-bottom: 1px solid var(--color-border); display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: baseline; }
-    .activity-item:last-child { border-bottom: none; }
-    .overdue { color: var(--color-error); font-weight: 600; }
-    .text-muted { color: var(--color-text-muted); }
-    .text-sm { font-size: var(--text-sm); }
-    textarea.input { width: 100%; resize: vertical; }
+    .detail-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-sm);
+      color: var(--color-text);
+    }
+    .detail-desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      white-space: pre-wrap;
+      line-height: var(--leading-relaxed);
+    }
+    .detail-fields {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      font-size: var(--text-sm);
+    }
+    .field-label {
+      color: var(--color-text-muted);
+      min-width: 100px;
+      font-weight: var(--font-medium);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+    }
+    .field-value {
+      color: var(--color-text);
+    }
+    .detail-actions {
+      display: flex;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border);
+    }
+    .card-heading {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-md);
+      color: var(--color-text);
+    }
+
+    /* Activity Timeline */
+    .activity-timeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+    .activity-item {
+      display: flex;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      position: relative;
+    }
+    .activity-item:not(:last-child) {
+      border-bottom: 1px solid var(--color-border);
+    }
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-outline-variant);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .activity-content {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3xs);
+      align-items: baseline;
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+    }
+    .activity-actor {
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+    }
+    .activity-action {
+      color: var(--color-text-secondary);
+    }
+    .activity-time {
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+    }
+
+    /* Comment form */
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .comment-form textarea {
+      width: 100%;
+    }
   `],
 })
 export class TaskDetailPage implements OnInit, OnDestroy {

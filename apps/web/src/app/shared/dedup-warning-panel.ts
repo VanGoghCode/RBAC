@@ -50,7 +50,7 @@ import type { DedupCandidate } from '../services/tasks.api';
             <label for="rationale">Reason for creating anyway</label>
             <textarea
               id="rationale"
-              class="input rationale-input"
+              class="input"
               rows="2"
               [ngModel]="rationale()"
               (ngModelChange)="rationale.set($event)"
@@ -91,6 +91,7 @@ import type { DedupCandidate } from '../services/tasks.api';
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      backdrop-filter: blur(4px);
     }
     .dedup-dialog {
       max-width: 560px;
@@ -98,14 +99,25 @@ import type { DedupCandidate } from '../services/tasks.api';
       overflow-y: auto;
     }
     .dialog {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      border-radius: var(--radius-2xl);
       padding: var(--space-lg);
       width: 90%;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--color-border);
     }
-    .dialog-title { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-sm); }
-    .dialog-message { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-md); }
+    .dialog-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-sm);
+      color: var(--color-text);
+    }
+    .dialog-message {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+      line-height: var(--leading-relaxed);
+    }
     .candidate-list {
       list-style: none;
       padding: 0;
@@ -116,80 +128,70 @@ import type { DedupCandidate } from '../services/tasks.api';
     }
     .candidate-card {
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       padding: var(--space-sm) var(--space-md);
       cursor: default;
+      background: var(--color-surface-container-low);
+      transition: border-color var(--transition-fast);
     }
     .candidate-card:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: none;
+      box-shadow: var(--shadow-focus);
+    }
+    .candidate-card:hover {
+      border-color: var(--color-outline-variant);
     }
     .candidate-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: var(--space-sm);
-      margin-bottom: var(--space-xs);
+      margin-bottom: var(--space-2xs);
     }
-    .candidate-title { font-weight: 600; font-size: var(--text-sm); flex: 1; }
+    .candidate-title {
+      font-weight: var(--font-semibold);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+    }
     .similarity-badge {
       font-size: var(--text-xs);
-      background: var(--color-warning-bg, #fef3c7);
-      color: var(--color-warning-text, #92400e);
-      padding: 2px 8px;
-      border-radius: var(--radius-sm);
+      background: var(--color-warning-bg);
+      color: var(--color-on-tertiary-fixed);
+      padding: var(--space-3xs) var(--space-sm);
+      border-radius: var(--radius-full);
       white-space: nowrap;
-      font-weight: 500;
+      font-weight: var(--font-medium);
     }
     .candidate-meta {
       display: flex;
       gap: var(--space-sm);
-      margin-bottom: var(--space-xs);
+      margin-bottom: var(--space-2xs);
     }
     .meta-item {
       font-size: var(--text-xs);
       color: var(--color-text-muted);
       text-transform: uppercase;
+      font-weight: var(--font-medium);
     }
     .candidate-link {
       font-size: var(--text-xs);
       color: var(--color-primary);
+      font-weight: var(--font-medium);
       text-decoration: none;
     }
     .candidate-link:hover { text-decoration: underline; }
-    .form-group { margin-bottom: var(--space-md); }
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
     .form-group label {
       display: block;
-      margin-bottom: var(--space-xs);
+      margin-bottom: var(--space-2xs);
       font-size: var(--text-sm);
-      font-weight: 500;
-    }
-    .rationale-input {
-      width: 100%;
-      padding: var(--space-xs) var(--space-sm);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-sm);
-      resize: vertical;
+      font-weight: var(--font-medium);
+      color: var(--color-text);
     }
     .dedup-actions {
       flex-wrap: wrap;
-    }
-    .btn-warning {
-      background: var(--color-warning-bg, #fef3c7);
-      color: var(--color-warning-text, #92400e);
-      border: 1px solid var(--color-warning-border, #f59e0b);
-    }
-    .btn-warning:hover {
-      background: var(--color-warning-hover, #fde68a);
-    }
-    .btn-ghost {
-      background: transparent;
-      color: var(--color-text-muted);
-      border: 1px solid var(--color-border);
-    }
-    .btn-ghost:hover {
-      background: var(--color-bg-hover, #f3f4f6);
     }
   `],
 })

@@ -17,7 +17,7 @@ import { StatusBadge } from '../../shared/status-badge';
   standalone: true,
   imports: [RouterLink, DatePipe, PageHeader, StatusBadge, PriorityBadge, EmptyState, LoadingComponent, ErrorAlert, ChatPanelComponent],
   template: `
-    <app-page-header heading="Dashboard" [subtitle]="'Welcome, ' + displayName">
+    <app-page-header heading="Dashboard" [subtitle]="'Welcome back, ' + displayName">
       @if (canCreate) {
         <a routerLink="/tasks/new" class="btn btn-primary">New Task</a>
       }
@@ -29,32 +29,38 @@ import { StatusBadge } from '../../shared/status-badge';
       <app-error-alert [message]="error()!" />
     } @else {
       <div class="summary-grid">
-        <div class="summary-card">
+        <div class="summary-card summary-open">
           <span class="summary-value">{{ openCount() }}</span>
           <span class="summary-label">Open</span>
         </div>
-        <div class="summary-card card-blocked">
+        <div class="summary-card summary-blocked">
           <span class="summary-value">{{ blockedCount() }}</span>
           <span class="summary-label">Blocked</span>
         </div>
-        <div class="summary-card card-overdue">
+        <div class="summary-card summary-overdue">
           <span class="summary-value">{{ overdueCount() }}</span>
           <span class="summary-label">Overdue</span>
         </div>
-        <div class="summary-card card-done">
+        <div class="summary-card summary-done">
           <span class="summary-value">{{ doneCount() }}</span>
           <span class="summary-label">Completed</span>
         </div>
       </div>
 
-      <h2 class="section-title">Recent Tasks</h2>
+      <div class="section-header">
+        <h2 class="section-title">Recent Tasks</h2>
+        @if (hasMore()) {
+          <a routerLink="/tasks" class="section-link">View all</a>
+        }
+      </div>
+
       @if (tasks().length === 0) {
         <app-empty-state title="No tasks yet" icon="\uD83D\uDCCB" description="Create your first task to get started.">
           <a routerLink="/tasks/new" class="btn btn-primary">Create Task</a>
         </app-empty-state>
       } @else {
-        <div class="task-table-wrap">
-          <table class="task-table">
+        <div class="table-wrap">
+          <table class="table">
             <thead>
               <tr>
                 <th scope="col">Title</th>
@@ -81,11 +87,6 @@ import { StatusBadge } from '../../shared/status-badge';
             </tbody>
           </table>
         </div>
-        @if (hasMore()) {
-          <div class="more-link">
-            <a routerLink="/tasks">View all tasks</a>
-          </div>
-        }
       }
     }
 
@@ -94,33 +95,68 @@ import { StatusBadge } from '../../shared/status-badge';
   styles: [`
     .summary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: var(--space-md);
       margin-bottom: var(--space-xl);
     }
-    .summary-card {
-      background: var(--color-bg-muted);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-md);
-      text-align: center;
-      border-top: 3px solid var(--color-primary);
+
+    @media (max-width: 768px) {
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    .card-blocked { border-top-color: var(--color-status-blocked); }
-    .card-overdue { border-top-color: var(--color-warning); }
-    .card-done { border-top-color: var(--color-status-done); }
-    .summary-value { display: block; font-size: var(--text-2xl); font-weight: 700; }
-    .summary-label { font-size: var(--text-sm); color: var(--color-text-muted); }
-    .section-title { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-md); }
-    .task-table-wrap { overflow-x: auto; }
-    .task-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
-    .task-table th { text-align: left; padding: var(--space-sm) var(--space-md); border-bottom: 2px solid var(--color-border); color: var(--color-text-muted); font-weight: 600; }
-    .task-table td { padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--color-border); }
-    .task-table a { color: var(--color-primary); }
-    .task-table a:hover { text-decoration: underline; }
-    .overdue { color: var(--color-error); font-weight: 600; }
-    .text-muted { color: var(--color-text-muted); }
-    .more-link { text-align: center; margin-top: var(--space-md); }
+
+    .summary-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+      border-top: 3px solid var(--color-primary);
+      transition: box-shadow var(--transition-fast);
+    }
+    .summary-card:hover {
+      box-shadow: var(--shadow-sm);
+    }
+    .summary-open { border-top-color: var(--color-primary); }
+    .summary-blocked { border-top-color: var(--color-status-blocked); }
+    .summary-overdue { border-top-color: var(--color-tertiary); }
+    .summary-done { border-top-color: var(--color-status-done); }
+
+    .summary-value {
+      display: block;
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+      letter-spacing: var(--tracking-tight);
+      line-height: 1;
+      margin-bottom: var(--space-xs);
+    }
+    .summary-label {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+    .section-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+      margin: 0;
+    }
+    .section-link {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-primary);
+    }
   `],
 })
 export class DashboardPage implements OnInit, OnDestroy {

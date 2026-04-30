@@ -129,19 +129,12 @@ import type { DedupCandidate } from '../../services/tasks.api';
   styles: [`
     .form-card {
       max-width: 640px;
-      background: var(--color-bg);
+      background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-xl);
       padding: var(--space-lg);
+      box-shadow: var(--shadow-xs);
     }
-    .form-group { margin-bottom: var(--space-md); }
-    .form-group label { display: block; margin-bottom: var(--space-xs); font-weight: 500; font-size: var(--text-sm); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-    .form-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-lg); }
-    .field-error { color: var(--color-error); font-size: var(--text-xs); margin-top: var(--space-xs); }
-    .hint { font-weight: 400; color: var(--color-text-secondary); }
-    textarea.input { resize: vertical; }
   `],
 })
 export class TaskCreatePage {
@@ -181,7 +174,6 @@ export class TaskCreatePage {
     this.submitting.set(true);
     this.error.set(null);
 
-    // Check for duplicates before creating
     this.tasksApi.checkDuplicates({
       title: this.title.trim(),
       description: this.description.trim() || undefined,
@@ -197,7 +189,6 @@ export class TaskCreatePage {
         }
       },
       error: () => {
-        // Dedup check failed — proceed with normal create
         this.createTask();
       },
     });
@@ -237,7 +228,6 @@ export class TaskCreatePage {
         this.router.navigate(['/tasks', task.id]);
       },
       error: (err) => {
-        // Handle 409 conflict — backend also checks dedup
         if (err?.status === 409 && err?.error?.candidates) {
           this.dedupCandidates.set(err.error.candidates);
           this.showDedupWarning.set(true);

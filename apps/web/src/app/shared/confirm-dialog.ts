@@ -32,18 +32,34 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      backdrop-filter: blur(4px);
     }
     .dialog {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      border-radius: var(--radius-2xl);
       padding: var(--space-lg);
       max-width: 400px;
       width: 90%;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--color-border);
     }
-    .dialog-title { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-sm); }
-    .dialog-message { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-lg); }
-    .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+    .dialog-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-sm);
+      color: var(--color-text);
+    }
+    .dialog-message {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-lg);
+      line-height: var(--leading-relaxed);
+    }
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+    }
   `],
 })
 export class ConfirmDialog {

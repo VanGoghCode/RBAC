@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 
 const STATUS_CONFIG: Record<string, { label: string; icon: string; css: string }> = {
-  TODO: { label: 'To Do', icon: '\u25CB', css: 'status-todo' },
+  TODO:        { label: 'To Do',       icon: '\u25CB', css: 'status-todo' },
   IN_PROGRESS: { label: 'In Progress', icon: '\u25D0', css: 'status-in-progress' },
-  IN_REVIEW: { label: 'In Review', icon: '\u25C9', css: 'status-in-review' },
-  BLOCKED: { label: 'Blocked', icon: '\u2716', css: 'status-blocked' },
-  DONE: { label: 'Done', icon: '\u2713', css: 'status-done' },
+  IN_REVIEW:   { label: 'In Review',   icon: '\u25C9', css: 'status-in-review' },
+  BLOCKED:     { label: 'Blocked',     icon: '\u2716', css: 'status-blocked' },
+  DONE:        { label: 'Done',        icon: '\u2713', css: 'status-done' },
 };
 
 @Component({
@@ -21,18 +21,33 @@ const STATUS_CONFIG: Record<string, { label: string; icon: string; css: string }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--space-3xs);
       font-size: var(--text-xs);
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 999px;
+      font-weight: var(--font-semibold);
+      padding: var(--space-3xs) var(--space-sm);
+      border-radius: var(--radius-full);
       white-space: nowrap;
     }
-    .status-todo { background: #f1f3f5; color: #495057; }
-    .status-in-progress { background: #edf2ff; color: #4c6ef5; }
-    .status-in-review { background: #f8f0fc; color: #ae3ec9; }
-    .status-blocked { background: #fff5f5; color: #e03131; }
-    .status-done { background: #ebfbee; color: #2f9e44; }
+    .status-todo {
+      background: var(--color-status-todo-bg);
+      color: var(--color-status-todo);
+    }
+    .status-in-progress {
+      background: var(--color-status-in-progress-bg);
+      color: var(--color-status-in-progress);
+    }
+    .status-in-review {
+      background: var(--color-status-in-review-bg);
+      color: var(--color-status-in-review);
+    }
+    .status-blocked {
+      background: var(--color-status-blocked-bg);
+      color: var(--color-status-blocked);
+    }
+    .status-done {
+      background: var(--color-status-done-bg);
+      color: var(--color-status-done);
+    }
   `],
 })
 export class StatusBadge {

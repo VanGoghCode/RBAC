@@ -39,14 +39,19 @@ const SUGGESTED_PROMPTS = [
   template: `
     <div class="chat-panel" [class.open]="open()" role="complementary" aria-label="Task Assistant">
       <div class="chat-header">
-        <h2>Task Assistant</h2>
+        <div class="chat-header-text">
+          <h2>Task Assistant</h2>
+          <span class="chat-header-badge">AI</span>
+        </div>
         <button class="chat-close" (click)="toggle()" aria-label="Close chat panel">&times;</button>
       </div>
 
       <div class="chat-messages" #messageList role="log" aria-live="polite" aria-relevant="additions">
         @if (messages().length === 0) {
           <div class="chat-welcome">
+            <div class="welcome-icon" aria-hidden="true">&#x2728;</div>
             <p class="welcome-text">Ask me about your tasks</p>
+            <p class="welcome-sub">I can help you find, understand, and manage your work.</p>
             <div class="suggested-prompts">
               @for (prompt of suggestedPrompts; track prompt) {
                 <button class="prompt-chip" (click)="sendSuggested(prompt)">{{ prompt }}</button>
@@ -136,16 +141,16 @@ const SUGGESTED_PROMPTS = [
     .chat-panel {
       position: fixed;
       top: 0;
-      right: -420px;
-      width: 400px;
+      right: -440px;
+      width: 420px;
       height: 100vh;
-      background: var(--color-bg);
+      background: var(--color-surface);
       border-left: 1px solid var(--color-border);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-xl);
       display: flex;
       flex-direction: column;
       z-index: 1000;
-      transition: right 0.3s ease;
+      transition: right 0.25s ease;
     }
     .chat-panel.open { right: 0; }
 
@@ -155,12 +160,27 @@ const SUGGESTED_PROMPTS = [
       justify-content: space-between;
       padding: var(--space-md) var(--space-lg);
       border-bottom: 1px solid var(--color-border);
-      background: var(--color-bg-muted);
+      background: var(--color-surface-container-low);
+    }
+    .chat-header-text {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
     }
     .chat-header h2 {
-      font-size: var(--text-lg);
-      font-weight: 600;
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
       margin: 0;
+      color: var(--color-text);
+    }
+    .chat-header-badge {
+      font-size: var(--text-xs);
+      font-weight: var(--font-bold);
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+      padding: var(--space-3xs) var(--space-xs);
+      border-radius: var(--radius-full);
+      letter-spacing: var(--tracking-wide);
     }
     .chat-close {
       background: none;
@@ -168,10 +188,15 @@ const SUGGESTED_PROMPTS = [
       font-size: var(--text-xl);
       cursor: pointer;
       color: var(--color-text-muted);
-      padding: var(--space-xs);
+      padding: var(--space-2xs);
       line-height: 1;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition-fast), color var(--transition-fast);
     }
-    .chat-close:hover { color: var(--color-text); }
+    .chat-close:hover {
+      background: var(--color-bg-hover);
+      color: var(--color-text);
+    }
 
     .chat-messages {
       flex: 1;
@@ -181,30 +206,44 @@ const SUGGESTED_PROMPTS = [
 
     .chat-welcome {
       text-align: center;
-      padding: var(--space-xl) var(--space-md);
+      padding: var(--space-2xl) var(--space-md);
+    }
+    .welcome-icon {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-md);
     }
     .welcome-text {
       font-size: var(--text-lg);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+      margin-bottom: var(--space-2xs);
+    }
+    .welcome-sub {
+      font-size: var(--text-sm);
       color: var(--color-text-muted);
       margin-bottom: var(--space-lg);
     }
     .suggested-prompts {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-sm);
+      gap: var(--space-xs);
       justify-content: center;
     }
     .prompt-chip {
-      background: var(--color-primary-light);
+      background: var(--color-surface-container);
       color: var(--color-primary);
-      border: 1px solid var(--color-primary);
-      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
       padding: var(--space-xs) var(--space-md);
-      font-size: var(--text-sm);
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
       cursor: pointer;
-      transition: background var(--transition-fast);
+      transition: background var(--transition-fast), border-color var(--transition-fast);
     }
-    .prompt-chip:hover { background: var(--color-primary); color: var(--color-bg); }
+    .prompt-chip:hover {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+    }
 
     .chat-message {
       margin-bottom: var(--space-md);
@@ -213,31 +252,33 @@ const SUGGESTED_PROMPTS = [
     .chat-message.user {
       margin-left: auto;
       background: var(--color-primary);
-      color: var(--color-text-inverse);
-      border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg);
+      color: var(--color-on-primary);
+      border-radius: var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);
       padding: var(--space-sm) var(--space-md);
     }
     .chat-message.assistant {
-      background: var(--color-bg-muted);
-      border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+      background: var(--color-surface-container);
+      border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-sm);
       padding: var(--space-sm) var(--space-md);
+      color: var(--color-text);
     }
     .message-content {
       white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.5;
+      line-height: var(--leading-relaxed);
+      font-size: var(--text-sm);
     }
 
     .typing-indicator {
       display: flex;
-      gap: 4px;
-      padding: var(--space-xs) 0;
+      gap: var(--space-3xs);
+      padding: var(--space-2xs) 0;
     }
     .typing-indicator span {
       width: 8px;
       height: 8px;
       background: var(--color-text-muted);
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       animation: typing 1.4s infinite both;
     }
     .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
@@ -251,7 +292,7 @@ const SUGGESTED_PROMPTS = [
       margin-top: var(--space-sm);
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-xs);
+      gap: var(--space-2xs);
       align-items: center;
     }
     .sources-label {
@@ -261,30 +302,34 @@ const SUGGESTED_PROMPTS = [
     .source-card {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-xs);
-      background: var(--color-bg);
+      gap: var(--space-2xs);
+      background: var(--color-surface);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      padding: 2px var(--space-sm);
+      padding: var(--space-3xs) var(--space-sm);
       font-size: var(--text-xs);
       cursor: pointer;
       transition: border-color var(--transition-fast);
     }
     .source-card:hover { border-color: var(--color-primary); }
-    .source-title { color: var(--color-primary); font-weight: 500; }
+    .source-title {
+      color: var(--color-primary);
+      font-weight: var(--font-medium);
+    }
     .source-status {
-      background: var(--color-bg-muted);
-      padding: 1px 4px;
+      background: var(--color-surface-container);
+      padding: var(--space-3xs) var(--space-2xs);
       border-radius: var(--radius-sm);
-      font-size: 0.65rem;
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
     }
 
     .chat-error {
       padding: var(--space-sm) var(--space-md);
       background: var(--color-error-bg);
-      color: var(--color-error);
+      color: var(--color-on-error-container);
       font-size: var(--text-sm);
-      border-top: 1px solid var(--color-error);
+      border-top: 1px solid var(--color-error-container);
     }
 
     .chat-input-area {
@@ -293,37 +338,45 @@ const SUGGESTED_PROMPTS = [
     }
     .input-wrapper {
       display: flex;
-      gap: var(--space-sm);
+      gap: var(--space-xs);
       align-items: flex-end;
     }
     textarea {
       flex: 1;
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       padding: var(--space-sm) var(--space-md);
       font-family: var(--font-sans);
       font-size: var(--text-sm);
       resize: none;
       min-height: 40px;
       max-height: 120px;
-      line-height: 1.5;
+      line-height: var(--leading-normal);
+      color: var(--color-text);
+      background: var(--color-surface-container-low);
+      transition: border-color var(--transition-fast);
     }
-    textarea:focus { border-color: var(--color-border-focus); outline: none; box-shadow: var(--focus-ring); }
+    textarea:focus {
+      border-color: var(--color-border-focus);
+      box-shadow: var(--shadow-focus);
+      outline: none;
+    }
     textarea::placeholder { color: var(--color-text-muted); }
 
     .send-btn {
       width: 40px;
       height: 40px;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       border: none;
       background: var(--color-primary);
-      color: var(--color-text-inverse);
+      color: var(--color-on-primary);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: var(--text-base);
       flex-shrink: 0;
+      transition: background var(--transition-fast);
     }
     .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .send-btn:not(:disabled):hover { background: var(--color-primary-hover); }
@@ -331,9 +384,9 @@ const SUGGESTED_PROMPTS = [
     .spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid var(--color-text-inverse);
+      border: 2px solid var(--color-on-primary);
       border-top-color: transparent;
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       animation: spin 0.6s linear infinite;
       display: inline-block;
     }
@@ -345,20 +398,23 @@ const SUGGESTED_PROMPTS = [
       right: var(--space-xl);
       width: 56px;
       height: 56px;
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       border: none;
       background: var(--color-primary);
-      color: var(--color-text-inverse);
-      font-size: 24px;
+      color: var(--color-on-primary);
+      font-size: var(--text-2xl);
       cursor: pointer;
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-lg);
       z-index: 999;
-      transition: background var(--transition-fast);
+      transition: background var(--transition-fast), box-shadow var(--transition-fast);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .chat-toggle:hover { background: var(--color-primary-hover); }
+    .chat-toggle:hover {
+      background: var(--color-primary-hover);
+      box-shadow: var(--shadow-xl);
+    }
 
     @media (max-width: 768px) {
       .chat-panel { width: 100%; right: -100%; }

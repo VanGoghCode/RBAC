@@ -50,7 +50,7 @@ describe('DashboardPage', () => {
     const fixture = TestBed.createComponent(DashboardPage);
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.textContent).toContain('Welcome, Admin');
+    expect(el.textContent).toContain('Welcome back, Admin');
   });
 
   it('shows empty state when no tasks', () => {

@@ -114,7 +114,7 @@ describe('AuthController', () => {
 
     expect(result.success).toBe(true);
     expect(res.clearCookie).toHaveBeenCalledWith('refresh_token', { path: '/api/auth/refresh' });
-    expect(res.clearCookie).toHaveBeenCalledWith('csrf_token', { path: '/api/auth' });
+    expect(res.clearCookie).toHaveBeenCalledWith('csrf_token', { path: '/' });
   });
 
   it('me returns user profile', async () => {

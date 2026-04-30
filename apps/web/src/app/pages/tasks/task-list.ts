@@ -30,10 +30,10 @@ import { StatusBadge } from '../../shared/status-badge';
         placeholder="Search tasks..."
         [ngModel]="search()"
         (ngModelChange)="onSearch($event)"
-        class="input search-input"
+        class="input filter-search"
         aria-label="Search tasks"
       />
-      <select [ngModel]="statusFilter()" (ngModelChange)="onFilter('status', $event)" class="input" aria-label="Filter by status">
+      <select [ngModel]="statusFilter()" (ngModelChange)="onFilter('status', $event)" class="input filter-select" aria-label="Filter by status">
         <option value="">All Statuses</option>
         <option value="TODO">To Do</option>
         <option value="IN_PROGRESS">In Progress</option>
@@ -41,14 +41,14 @@ import { StatusBadge } from '../../shared/status-badge';
         <option value="BLOCKED">Blocked</option>
         <option value="DONE">Done</option>
       </select>
-      <select [ngModel]="priorityFilter()" (ngModelChange)="onFilter('priority', $event)" class="input" aria-label="Filter by priority">
+      <select [ngModel]="priorityFilter()" (ngModelChange)="onFilter('priority', $event)" class="input filter-select" aria-label="Filter by priority">
         <option value="">All Priorities</option>
         <option value="LOW">Low</option>
         <option value="MEDIUM">Medium</option>
         <option value="HIGH">High</option>
         <option value="CRITICAL">Critical</option>
       </select>
-      <select [ngModel]="sortField()" (ngModelChange)="onSort($event)" class="input" aria-label="Sort by">
+      <select [ngModel]="sortField()" (ngModelChange)="onSort($event)" class="input filter-select" aria-label="Sort by">
         <option value="updatedAt">Last Updated</option>
         <option value="createdAt">Created</option>
         <option value="dueAt">Due Date</option>
@@ -64,8 +64,8 @@ import { StatusBadge } from '../../shared/status-badge';
         <a routerLink="/tasks/new" class="btn btn-primary">Create Task</a>
       </app-empty-state>
     } @else {
-      <div class="task-table-wrap">
-        <table class="task-table">
+      <div class="table-wrap">
+        <table class="table">
           <thead>
             <tr>
               <th scope="col">Title</th>
@@ -110,16 +110,18 @@ import { StatusBadge } from '../../shared/status-badge';
       gap: var(--space-sm);
       margin-bottom: var(--space-lg);
     }
-    .search-input { flex: 1; min-width: 200px; }
-    .task-table-wrap { overflow-x: auto; }
-    .task-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
-    .task-table th { text-align: left; padding: var(--space-sm) var(--space-md); border-bottom: 2px solid var(--color-border); color: var(--color-text-muted); font-weight: 600; }
-    .task-table td { padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--color-border); }
-    .task-table a { color: var(--color-primary); }
-    .task-table a:hover { text-decoration: underline; }
-    .overdue { color: var(--color-error); font-weight: 600; }
-    .text-muted { color: var(--color-text-muted); }
-    .load-more { text-align: center; margin-top: var(--space-md); }
+    .filter-search {
+      flex: 1;
+      min-width: 200px;
+    }
+    .filter-select {
+      width: auto;
+      min-width: 140px;
+    }
+    .load-more {
+      text-align: center;
+      margin-top: var(--space-lg);
+    }
   `],
 })
 export class TaskListPage implements OnInit, OnDestroy {

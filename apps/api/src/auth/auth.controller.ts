@@ -32,7 +32,7 @@ const CSRF_COOKIE_OPTIONS = {
   httpOnly: false,
   secure: process.env['NODE_ENV'] === 'production',
   sameSite: 'strict' as const,
-  path: '/api/auth',
+  path: '/',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
@@ -90,7 +90,7 @@ export class AuthController {
     const token = req.cookies?.['refresh_token'] as string | undefined;
     await this.authService.logout(user.userId, token);
     res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
-    res.clearCookie('csrf_token', { path: '/api/auth' });
+    res.clearCookie('csrf_token', { path: '/' });
     return { success: true };
   }
 

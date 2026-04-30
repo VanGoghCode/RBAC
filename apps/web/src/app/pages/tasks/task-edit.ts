@@ -115,18 +115,12 @@ import { PageHeader } from '../../shared/page-header';
   styles: [`
     .form-card {
       max-width: 640px;
-      background: var(--color-bg);
+      background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-xl);
       padding: var(--space-lg);
+      box-shadow: var(--shadow-xs);
     }
-    .form-group { margin-bottom: var(--space-md); }
-    .form-group label { display: block; margin-bottom: var(--space-xs); font-weight: 500; font-size: var(--text-sm); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-    .form-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-lg); }
-    .hint { font-weight: 400; color: var(--color-text-secondary); }
-    textarea.input { resize: vertical; }
   `],
 })
 export class TaskEditPage implements OnInit {
