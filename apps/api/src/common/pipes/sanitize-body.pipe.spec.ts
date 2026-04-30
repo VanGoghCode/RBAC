@@ -41,20 +41,21 @@ describe('SanitizeBodyPipe', () => {
 
   it('deep-sanitizes nested objects', () => {
     const inner = Object.assign({}, { deep: 'value' }, { constructor: 'oops' });
-    const outer = Object.assign({}, { title: 'valid' }, { prototype: { polluted: true } });
-    (outer as any).nested = inner;
+    const outer = Object.assign({}, { title: 'valid' }, { prototype: { polluted: true } }) as Record<string, unknown>;
+    outer.nested = inner;
 
-    const result = pipe.transform(outer) as any;
+    const result = pipe.transform(outer) as Record<string, unknown>;
+    const nested = result.nested as Record<string, unknown>;
     expect(result.title).toBe('valid');
     expect(Object.keys(result)).not.toContain('prototype');
-    expect(Object.keys(result.nested)).not.toContain('constructor');
-    expect(result.nested.deep).toBe('value');
+    expect(Object.keys(nested)).not.toContain('constructor');
+    expect(nested.deep).toBe('value');
   });
 
   it('deep-sanitizes arrays with pollution keys', () => {
     const item1 = Object.assign({}, { name: 'a' }, { constructor: 'bad1' });
     const item2 = Object.assign({}, { name: 'b' }, { prototype: 'bad2' });
-    const result = pipe.transform([item1, item2]) as any[];
+    const result = pipe.transform([item1, item2]) as Record<string, unknown>[];
     expect(result[0]).toEqual({ name: 'a' });
     expect(result[1]).toEqual({ name: 'b' });
   });

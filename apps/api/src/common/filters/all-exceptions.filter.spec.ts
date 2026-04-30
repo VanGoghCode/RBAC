@@ -1,19 +1,18 @@
 import {
-  HttpException,
+  type ArgumentsHost,
   HttpStatus,
   ForbiddenException,
   UnauthorizedException,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ZodError, z } from 'zod';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter;
-  let mockResponse: any;
-  let mockHost: any;
+  let mockResponse: Record<string, jest.Mock>;
+  let mockHost: ArgumentsHost;
 
   const originalEnv = process.env['NODE_ENV'];
 
@@ -28,7 +27,7 @@ describe('AllExceptionsFilter', () => {
         getResponse: () => mockResponse,
         getRequest: () => ({}),
       }),
-    };
+    } as unknown as ArgumentsHost;
   });
 
   afterAll(() => {
@@ -102,17 +101,17 @@ describe('AllExceptionsFilter', () => {
 
   it('handles ZodError with readable validation message', () => {
     const schema = z.object({ email: z.string().email() });
-    let zodError: ZodError;
+    let zodError: ZodError | undefined;
     try {
       schema.parse({ email: 'not-an-email' });
     } catch (e) {
       zodError = e as ZodError;
     }
 
-    filter.catch(zodError!, mockHost);
+    filter.catch(zodError as ZodError, mockHost);
 
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
-    const body = mockResponse.json.mock.calls[0][0];
+    const body = mockResponse.json.mock.calls[0][0] as Record<string, unknown>;
     expect(body.success).toBe(false);
     expect(body.error).toContain('email');
     expect(body.statusCode).toBe(400);
@@ -133,7 +132,7 @@ describe('AllExceptionsFilter', () => {
       }),
     );
     // No stack or details in production
-    const body = mockResponse.json.mock.calls[0][0];
+    const body = mockResponse.json.mock.calls[0][0] as Record<string, unknown>;
     expect(body.stack).toBeUndefined();
     expect(body.details).toBeUndefined();
   });
@@ -144,7 +143,7 @@ describe('AllExceptionsFilter', () => {
 
     devFilter.catch(new Error('debug info'), mockHost);
 
-    const body = mockResponse.json.mock.calls[0][0];
+    const body = mockResponse.json.mock.calls[0][0] as Record<string, unknown>;
     expect(body.details).toBe('debug info');
     expect(body.stack).toBeDefined();
   });

@@ -1,12 +1,12 @@
-import { json, Request, Response, NextFunction } from 'express';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
+import { json, type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
-import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { SanitizeBodyPipe } from './common/pipes/sanitize-body.pipe';
-import { RedactingLogger } from './common/logging/redacting-logger';
 import { AppModule } from './app/app.module';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { RedactingLogger } from './common/logging/redacting-logger';
+import { SanitizeBodyPipe } from './common/pipes/sanitize-body.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -60,10 +60,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       // Map ForbiddenException (resource-level) → 404 to prevent enumeration
       if (status === HttpStatus.FORBIDDEN) {
-        const msg =
+        const msg = String(
           typeof exceptionResponse === 'string'
             ? exceptionResponse
-            : (exceptionResponse as any).message ?? exception.message;
+            : (exceptionResponse as Record<string, unknown>).message ?? exception.message,
+        );
 
         // Only map to 404 if the message looks like a resource access denial
         if (this.isResourceAccessDenial(msg)) {

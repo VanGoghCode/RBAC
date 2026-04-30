@@ -1,13 +1,13 @@
 import { Test } from '@nestjs/testing';
-import { AuthorizationScopeService, PermissionService } from '@task-ai/auth';
-import { TaskRepository, AuditRepository, VectorSearchRepository } from '@task-ai/tasks';
 import { PromptRenderer } from '@task-ai/ai';
+import { AuthorizationScopeService } from '@task-ai/auth';
+import { TaskRepository, AuditRepository, VectorSearchRepository } from '@task-ai/tasks';
+import { LlmTelemetryService } from '../ai/llm-telemetry.service';
 import { PrismaService } from '../prisma';
 import { ChatRepository } from './chat.repository';
 import { ChatService } from './chat.service';
 import { GuardrailService } from './guardrails';
 import { IntentDetector } from './intent/intent-detector';
-import { LlmTelemetryService } from '../ai/llm-telemetry.service';
 
 /**
  * AI-Specific Security Regression Tests
