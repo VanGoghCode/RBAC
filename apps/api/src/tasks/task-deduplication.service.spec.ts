@@ -1,9 +1,9 @@
 import { Test } from '@nestjs/testing';
+import { FakeEmbeddingClient } from '@task-ai/ai';
 import { AuthorizationScopeService } from '@task-ai/auth';
 import { TaskCompositeTextBuilder, TaskRepository, AuditRepository, VectorSearchRepository } from '@task-ai/tasks';
 import { PrismaService } from '../prisma';
 import { TaskDeduplicationService } from './task-deduplication.service';
-import { FakeEmbeddingClient } from '@task-ai/ai';
 
 describe('TaskDeduplicationService', () => {
   let service: TaskDeduplicationService;

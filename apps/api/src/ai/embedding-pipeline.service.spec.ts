@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
-import { EmbeddingPipelineService } from './embedding-pipeline.service';
-import { PrismaService } from '../prisma';
 import { FakeEmbeddingClient } from '@task-ai/ai';
 import { TaskCompositeTextBuilder } from '@task-ai/tasks';
+import { PrismaService } from '../prisma';
+import { EmbeddingPipelineService } from './embedding-pipeline.service';
 
 describe('EmbeddingPipelineService', () => {
   let service: EmbeddingPipelineService;

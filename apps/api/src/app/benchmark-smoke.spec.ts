@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
+import { FakeEmbeddingClient, FakeLlmClient } from '@task-ai/ai';
 import { AuthorizationScopeService, PermissionService } from '@task-ai/auth';
 import { TaskCompositeTextBuilder, TaskRepository, AuditRepository } from '@task-ai/tasks';
-import { FakeEmbeddingClient, FakeLlmClient } from '@task-ai/ai';
 
 /**
  * Benchmark smoke tests.

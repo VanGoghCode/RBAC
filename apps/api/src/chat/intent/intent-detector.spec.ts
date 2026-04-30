@@ -1,6 +1,5 @@
+import { PromptRenderer, FakeLlmClient } from '@task-ai/ai';
 import { IntentDetector } from './intent-detector';
-import { PromptRenderer } from '@task-ai/ai';
-import { FakeLlmClient } from '@task-ai/ai';
 
 describe('IntentDetector', () => {
   let detector: IntentDetector;

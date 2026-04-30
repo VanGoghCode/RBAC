@@ -9,8 +9,8 @@
  */
 
 import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime';
-import { BedrockLlmClient } from './llm/bedrock-llm-client';
 import { BedrockEmbeddingClient } from './embedding/bedrock-embedding-client';
+import { BedrockLlmClient } from './llm/bedrock-llm-client';
 
 const shouldRun = process.env['RUN_LIVE_BEDROCK_TESTS'] === 'true';
 

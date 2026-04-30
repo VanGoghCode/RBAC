@@ -64,8 +64,7 @@ test.describe('Accessibility', () => {
     const toggle = page.locator('button[aria-label="Open task assistant"]');
     if (await toggle.isVisible()) {
       // Toggle should have aria-expanded
-      const expanded = await toggle.getAttribute('aria-expanded');
-      expect(expanded).toBe('false');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
       await toggle.click();
 
