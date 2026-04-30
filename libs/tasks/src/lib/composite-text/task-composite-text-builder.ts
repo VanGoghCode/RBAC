@@ -20,7 +20,7 @@ const MAX_TOTAL_LENGTH = 4000;
 
 export class TaskCompositeTextBuilder {
   build(
-    task: Pick<Task, 'title' | 'description' | 'status' | 'priority' | 'category' | 'dueAt' | 'visibility'>,
+    task: Pick<Task, 'title' | 'description' | 'status' | 'priority' | 'category' | 'tags' | 'dueAt' | 'visibility'>,
     options?: {
       assigneeName?: string;
       activities?: ActivityEntry[];
@@ -39,6 +39,11 @@ export class TaskCompositeTextBuilder {
     // Category
     if (task.category) {
       parts.push(`Category: ${task.category}`);
+    }
+
+    // Tags
+    if (task.tags && task.tags.length > 0) {
+      parts.push(`Tags: ${task.tags.join(', ')}`);
     }
 
     // Status

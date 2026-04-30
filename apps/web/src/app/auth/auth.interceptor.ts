@@ -23,8 +23,8 @@ export const authInterceptor: HttpInterceptorFn = (
 
   let authReq = req;
 
-  // Add CSRF token for mutating auth requests (except login)
-  if (isMutating && isAuthEndpoint && !isLogin) {
+  // Add CSRF token for all mutating requests (except login — no CSRF cookie exists yet)
+  if (isMutating && !isLogin) {
     const csrfToken = getCookie('csrf_token');
     if (csrfToken) {
       authReq = authReq.clone({

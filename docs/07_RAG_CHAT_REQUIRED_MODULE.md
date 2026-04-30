@@ -271,7 +271,7 @@ Owner Expectations: Chat panel visibly streams responses, displays sources, supp
 
 ## Other
 
-- [ ] Confirm pre-push command are running and working successfully.
+- [x] Confirm pre-push command are running and working successfully.
 
 ---
 
@@ -287,3 +287,6 @@ Owner Expectations: Chat panel visibly streams responses, displays sources, supp
 - ChatPanelComponent: standalone Angular component. Slide-out panel (fixed right, 400px). Message list with role="log", aria-live="polite". Input with FormsModule ngModel. Enter sends, Shift+Enter newline. Typing indicator (CSS animation dots). Source cards: keyboard-focusable, click/Enter navigates to /tasks/:id. Suggested prompts: 4 chips shown on empty state. Chat toggle button (fixed bottom-right, 56px circle). Signal-based state. Auto-scrolls on new messages. Mobile responsive (100% width). Error display with role="alert".
 - Dashboard integration: ChatPanelComponent imported in DashboardPage imports array. `<app-chat-panel />` added to template.
 - Build: `nx build api` compiles clean. `nx build web` compiles clean (minor style budget warning 786 bytes over).
+
+### Streaming Note
+`/chat/ask/stream` currently wraps the non-streamed `ChatService.ask()` call in an SSE Observable. It emits a single `complete` event after the full LLM response is ready. True incremental token-by-token streaming (using Bedrock `invokeModelWithResponseStream`) is deferred to Module 10 (Application Security Hardening) where it will be implemented alongside input sanitization and hardened streaming error recovery. The frontend already supports rendering chunked events — only the backend needs the streaming Bedrock integration.

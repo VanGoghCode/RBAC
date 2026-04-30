@@ -9,17 +9,19 @@ describe('TaskCompositeTextBuilder', () => {
     status: 'IN_PROGRESS' as const,
     priority: 'HIGH' as const,
     category: 'Authentication',
+    tags: ['bug', 'auth', 'frontend'],
     dueAt: new Date('2026-05-01T00:00:00Z'),
     visibility: 'PUBLIC' as const,
   };
 
   // ─── Basic Format ────────────────────────────────────────────
 
-  it('includes title, description, category, status, priority', () => {
+  it('includes title, description, category, status, priority, tags', () => {
     const result = builder.build(baseTask);
     expect(result.text).toContain('Title: Fix login bug');
     expect(result.text).toContain('Description: Users cannot log in after password change');
     expect(result.text).toContain('Category: Authentication');
+    expect(result.text).toContain('Tags: bug, auth, frontend');
     expect(result.text).toContain('Status: IN_PROGRESS');
     expect(result.text).toContain('Priority: HIGH');
     expect(result.text).toContain('Due: 2026-05-01T00:00:00.000Z');
@@ -32,11 +34,13 @@ describe('TaskCompositeTextBuilder', () => {
       status: 'TODO' as const,
       priority: 'MEDIUM' as const,
       category: null,
+      tags: [],
       dueAt: null,
       visibility: 'PUBLIC' as const,
     });
     expect(result.text).not.toContain('Description:');
     expect(result.text).not.toContain('Category:');
+    expect(result.text).not.toContain('Tags:');
     expect(result.text).not.toContain('Due:');
     expect(result.text).not.toContain('Assignee:');
   });

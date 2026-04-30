@@ -24,6 +24,7 @@ export const CreateTaskSchema = z
       .string()
       .datetime({ message: 'Due date must be a valid ISO date' })
       .optional(),
+    tags: z.array(z.string().trim().max(50)).max(10).default([]),
     orgId: z.string().uuid('Organization ID is required'),
   })
   .strict();
@@ -51,6 +52,7 @@ export const UpdateTaskSchema = z
       .datetime({ message: 'Due date must be a valid ISO date' })
       .nullable()
       .optional(),
+    tags: z.array(z.string().trim().max(50)).max(10).optional(),
   })
   .strict();
 

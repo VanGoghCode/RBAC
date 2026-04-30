@@ -110,6 +110,7 @@ export class TaskRepository {
       status: string;
       priority: string;
       category?: string;
+      tags?: string[];
       visibility: string;
       assigneeId?: string;
       dueAt?: Date;
@@ -124,6 +125,7 @@ export class TaskRepository {
           status: data.status as TaskStatus,
           priority: data.priority as TaskPriority,
           category: data.category ?? null,
+          tags: data.tags ?? [],
           visibility: data.visibility as TaskVisibility,
           createdById: scope.actorUserId,
           assigneeId: data.assigneeId ?? null,
@@ -168,6 +170,7 @@ export class TaskRepository {
       status?: string;
       priority?: string;
       category?: string | null;
+      tags?: string[];
       visibility?: string;
       assigneeId?: string | null;
       dueAt?: Date | null;
@@ -185,6 +188,13 @@ export class TaskRepository {
     if (data.description !== undefined) {
       const newDesc = data.description ?? null;
       if (newDesc !== existing.description) updates.description = newDesc;
+    }
+    if (data.tags !== undefined) {
+      const newTags = data.tags;
+      const existingTags = existing.tags ?? [];
+      if (JSON.stringify(newTags) !== JSON.stringify(existingTags)) {
+        updates.tags = newTags;
+      }
     }
     if (data.status !== undefined && data.status !== existing.status) {
       updates.status = data.status as TaskStatus;

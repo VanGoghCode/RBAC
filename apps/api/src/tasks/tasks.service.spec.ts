@@ -103,6 +103,7 @@ describe('TasksService', () => {
         status: 'TODO',
         priority: 'MEDIUM',
         visibility: 'PUBLIC',
+        tags: [],
       });
 
       expect(result).toEqual(mockTask);
@@ -121,6 +122,7 @@ describe('TasksService', () => {
           status: 'TODO',
           priority: 'MEDIUM',
           visibility: 'PUBLIC',
+          tags: [],
         }),
       ).rejects.toThrow(ForbiddenException);
     });
@@ -136,6 +138,7 @@ describe('TasksService', () => {
           status: 'TODO',
           priority: 'MEDIUM',
           visibility: 'PUBLIC',
+          tags: [],
           assigneeId: 'user-outside',
         }),
       ).rejects.toThrow(BadRequestException);

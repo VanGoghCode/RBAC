@@ -9,6 +9,7 @@ const apiEnvSchema = z.object({
   BEDROCK_EMBEDDING_MODEL_ID: z.string().min(1, 'BEDROCK_EMBEDDING_MODEL_ID is required'),
   RATE_LIMIT_TTL: z.coerce.number().int().positive().default(60),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+  CORS_ORIGIN: z.string().min(1, 'CORS_ORIGIN is required').default('http://localhost:4200'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
 });

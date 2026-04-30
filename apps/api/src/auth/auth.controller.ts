@@ -17,7 +17,6 @@ import { AuthService } from './auth.service';
 import { Public } from './decorators';
 import { CurrentUser } from './decorators';
 import { LoginSchema } from './dto';
-import { CsrfGuard } from './guards/csrf.guard';
 import { ThrottlerBehindProxyGuard } from './guards/throttler-behind-proxy.guard';
 import type { AuthenticatedUser, LoginResponse } from '@task-ai/shared/types';
 
@@ -38,7 +37,7 @@ const CSRF_COOKIE_OPTIONS = {
 };
 
 @Controller('auth')
-@UseGuards(ThrottlerBehindProxyGuard, CsrfGuard)
+@UseGuards(ThrottlerBehindProxyGuard)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

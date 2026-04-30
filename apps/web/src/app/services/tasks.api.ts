@@ -10,6 +10,7 @@ export interface TaskItem {
   status: string;
   priority: string;
   category: string | null;
+  tags: string[];
   visibility: string;
   createdById: string;
   assigneeId: string | null;
@@ -46,6 +47,7 @@ export interface CreateTaskPayload {
   status?: string;
   priority?: string;
   category?: string;
+  tags?: string[];
   visibility?: string;
   assigneeId?: string;
   dueAt?: string;
@@ -58,6 +60,7 @@ export interface UpdateTaskPayload {
   status?: string;
   priority?: string;
   category?: string | null;
+  tags?: string[];
   visibility?: string;
   assigneeId?: string | null;
   dueAt?: string | null;

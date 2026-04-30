@@ -65,6 +65,13 @@ import { PageHeader } from '../../shared/page-header';
             <input id="category" type="text" class="input" [(ngModel)]="category" name="category" maxlength="100" />
           </div>
           <div class="form-group">
+            <label for="tags">Tags <span class="hint">(comma-separated)</span></label>
+            <input id="tags" type="text" class="input" [(ngModel)]="tagsInput" name="tags" maxlength="500" placeholder="bug, auth, frontend" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
             <label for="visibility">Visibility</label>
             <select id="visibility" class="input" [(ngModel)]="visibility" name="visibility">
               <option value="PUBLIC">Public</option>
@@ -118,6 +125,7 @@ import { PageHeader } from '../../shared/page-header';
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
     @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
     .form-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-lg); }
+    .hint { font-weight: 400; color: var(--color-text-secondary); }
     textarea.input { resize: vertical; }
   `],
 })
@@ -140,6 +148,7 @@ export class TaskEditPage implements OnInit {
   status = 'TODO';
   priority = 'MEDIUM';
   category = '';
+  tagsInput = '';
   visibility = 'PUBLIC';
   dueAt = '';
   assigneeId = '';
@@ -159,6 +168,7 @@ export class TaskEditPage implements OnInit {
         this.status = t.status;
         this.priority = t.priority;
         this.category = t.category ?? '';
+        this.tagsInput = (t.tags ?? []).join(', ');
         this.visibility = t.visibility;
         this.assigneeId = t.assigneeId ?? '';
         if (t.dueAt) {
@@ -185,6 +195,9 @@ export class TaskEditPage implements OnInit {
       status: this.status,
       priority: this.priority,
       category: this.category.trim() || null,
+      tags: this.tagsInput.trim()
+        ? this.tagsInput.split(',').map((t) => t.trim()).filter((t) => t.length > 0)
+        : [],
       visibility: this.visibility,
     };
 

@@ -96,9 +96,11 @@ async function main() {
     { userId: ownerUser.id, orgId: acmeEng.id, role: 'owner' },
     { userId: ownerUser.id, orgId: acmeProduct.id, role: 'owner' },
     { userId: adminUser.id, orgId: acmeEng.id, role: 'admin' },
+    { userId: adminUser.id, orgId: acmeProduct.id, role: 'admin' },
     { userId: managerUser.id, orgId: acmeEng.id, role: 'manager' },
     { userId: viewerUser.id, orgId: acmeEng.id, role: 'viewer' },
     { userId: memberUser.id, orgId: acmeEng.id, role: 'member' },
+    { userId: memberUser.id, orgId: acmeProduct.id, role: 'member' },
   ];
 
   for (const m of membershipData) {
@@ -122,6 +124,7 @@ async function main() {
       status: TaskStatus.IN_PROGRESS,
       priority: TaskPriority.HIGH,
       category: 'Auth',
+      tags: ['auth', 'sso', 'oauth'],
       visibility: TaskVisibility.PUBLIC,
       dueAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     },
@@ -134,6 +137,7 @@ async function main() {
       status: TaskStatus.TODO,
       priority: TaskPriority.MEDIUM,
       category: 'Backend',
+      tags: ['api', 'refactor', 'validation'],
       visibility: TaskVisibility.PUBLIC,
     },
     {
@@ -145,6 +149,7 @@ async function main() {
       status: TaskStatus.TODO,
       priority: TaskPriority.LOW,
       category: 'Frontend',
+      tags: ['dashboard', 'charts', 'analytics'],
       visibility: TaskVisibility.PUBLIC,
     },
     {
@@ -156,6 +161,7 @@ async function main() {
       status: TaskStatus.BLOCKED,
       priority: TaskPriority.CRITICAL,
       category: 'Security',
+      tags: ['security', 'xss', 'bug'],
       visibility: TaskVisibility.PUBLIC,
     },
     {
@@ -167,6 +173,7 @@ async function main() {
       status: TaskStatus.IN_PROGRESS,
       priority: TaskPriority.HIGH,
       category: 'Testing',
+      tags: ['testing', 'overdue'],
       visibility: TaskVisibility.PUBLIC,
       dueAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
     },
@@ -179,6 +186,7 @@ async function main() {
       status: TaskStatus.IN_REVIEW,
       priority: TaskPriority.MEDIUM,
       category: 'Backend',
+      tags: ['api', 'error-handling'],
       visibility: TaskVisibility.PUBLIC,
     },
     {
@@ -190,6 +198,7 @@ async function main() {
       status: TaskStatus.TODO,
       priority: TaskPriority.HIGH,
       category: 'Auth',
+      tags: ['auth', 'sso'],
       visibility: TaskVisibility.PUBLIC,
     },
     {
@@ -201,6 +210,7 @@ async function main() {
       status: TaskStatus.TODO,
       priority: TaskPriority.MEDIUM,
       category: 'Testing',
+      tags: ['testing', 'rbac'],
       visibility: TaskVisibility.PRIVATE,
     },
     {
@@ -212,6 +222,7 @@ async function main() {
       status: TaskStatus.TODO,
       priority: TaskPriority.MEDIUM,
       category: 'Testing',
+      tags: ['testing', 'rbac'],
       visibility: TaskVisibility.ASSIGNED_ONLY,
     },
     {
@@ -223,6 +234,7 @@ async function main() {
       status: TaskStatus.TODO,
       priority: TaskPriority.LOW,
       category: 'Planning',
+      tags: ['product', 'cross-org'],
       visibility: TaskVisibility.PUBLIC,
     },
     {
@@ -234,6 +246,7 @@ async function main() {
       status: TaskStatus.DONE,
       priority: TaskPriority.MEDIUM,
       category: 'Backend',
+      tags: ['database', 'migration', 'prisma'],
       visibility: TaskVisibility.PUBLIC,
       completedAt: new Date(),
     },

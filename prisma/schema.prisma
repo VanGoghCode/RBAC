@@ -53,7 +53,7 @@ model OrgMembership {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
   orgId     String   @map("org_id")
-  role      String   // owner, admin, member, viewer
+  role      String   // owner, admin, manager, member, viewer
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -96,6 +96,7 @@ model Task {
   status      TaskStatus     @default(TODO)
   priority    TaskPriority   @default(MEDIUM)
   category    String?
+  tags        String[]       @default([])
   visibility  TaskVisibility @default(PUBLIC)
   createdById String         @map("created_by_id")
   assigneeId  String?        @map("assignee_id")

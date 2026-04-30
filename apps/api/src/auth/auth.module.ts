@@ -8,6 +8,7 @@ import { AuditRepository } from '@task-ai/tasks';
 import { PrismaModule, PrismaService } from '../prisma';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { CsrfGuard } from './guards/csrf.guard';
 import { JwtAccessGuard } from './guards/jwt-access.guard';
 import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
@@ -33,6 +34,10 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     {
       provide: APP_GUARD,
       useClass: JwtAccessGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: CsrfGuard,
     },
   ],
   exports: [AuthService, AuthorizationScopeService],
