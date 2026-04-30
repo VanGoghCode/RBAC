@@ -26,3 +26,8 @@ export { TASK_CREATION_PROMPT } from './lib/prompts/task-creation.prompt';
 export { GUARDRAIL_PROMPT } from './lib/prompts/guardrail.prompt';
 export { PROMPT_MANIFEST, getPromptVersion } from './lib/prompts/prompt-manifest';
 export type { PromptManifestEntry } from './lib/prompts/prompt-manifest';
+
+// Test fakes — never calls AWS
+export { FakeEmbeddingClient, cosineSimilarity } from './lib/embedding/fake-embedding-client';
+export { FakeLlmClient } from './lib/llm/fake-llm-client-impl';
+export type { FakeLlmResponse } from './lib/llm/fake-llm-client-impl';
