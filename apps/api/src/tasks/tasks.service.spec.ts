@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { AuthorizationScopeService } from '@task-ai/auth';
 import { TaskRepository, AuditRepository } from '@task-ai/tasks';
 import { PrismaService } from '../prisma';
+import { TaskDeduplicationService } from './task-deduplication.service';
 import { TasksService } from './tasks.service';
 
 describe('TasksService', () => {
@@ -19,6 +20,11 @@ describe('TasksService', () => {
   let auditRepo: { log: jest.Mock };
   let scopeService: { resolveScope: jest.Mock };
   let prisma: { orgMembership: { findFirst: jest.Mock } };
+  let dedupService: {
+    checkForDuplicates: jest.Mock;
+    logDecision: jest.Mock;
+    executeMerge: jest.Mock;
+  };
 
   const memberScope = {
     actorUserId: 'user-1',
@@ -75,6 +81,11 @@ describe('TasksService', () => {
     auditRepo = { log: jest.fn().mockResolvedValue(undefined) };
     scopeService = { resolveScope: jest.fn() };
     prisma = { orgMembership: { findFirst: jest.fn() } };
+    dedupService = {
+      checkForDuplicates: jest.fn().mockResolvedValue({ isDuplicate: false }),
+      logDecision: jest.fn().mockResolvedValue(undefined),
+      executeMerge: jest.fn(),
+    };
 
     const module = await Test.createTestingModule({
       providers: [
@@ -83,6 +94,7 @@ describe('TasksService', () => {
         { provide: TaskRepository, useValue: taskRepo },
         { provide: AuditRepository, useValue: auditRepo },
         { provide: AuthorizationScopeService, useValue: scopeService },
+        { provide: TaskDeduplicationService, useValue: dedupService },
       ],
     }).compile();
 
