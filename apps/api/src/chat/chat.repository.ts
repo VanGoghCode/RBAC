@@ -124,8 +124,8 @@ export class ChatRepository {
         conversationId,
         role,
         content,
-        sourcesJson: sourcesJson ?? undefined,
-        guardrailResultJson: guardrailResultJson ?? undefined,
+        sourcesJson: (sourcesJson ?? undefined) as any,
+        guardrailResultJson: (guardrailResultJson ?? undefined) as any,
       },
     });
   }

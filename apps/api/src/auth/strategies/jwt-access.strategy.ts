@@ -11,7 +11,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'jwt-access') 
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env['JWT_ACCESS_SECRET'] ?? 'change-me-access-secret-min-32-chars',
+      secretOrKey: process.env['JWT_ACCESS_SECRET'] ?? (() => { throw new Error('JWT_ACCESS_SECRET not configured'); })(),
       passReqToCallback: false,
     });
   }

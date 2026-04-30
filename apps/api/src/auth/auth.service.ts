@@ -99,9 +99,10 @@ export class AuthService {
     let payload: RefreshTokenPayload;
     try {
       payload = this.jwt.verify<RefreshTokenPayload>(token, {
-        secret: process.env['JWT_REFRESH_SECRET'] ?? 'change-me-refresh-secret-min-32-chars',
+        secret: process.env['JWT_REFRESH_SECRET'] ?? (() => { throw new Error('JWT_REFRESH_SECRET not configured'); })(),
       });
-    } catch {
+    } catch (e) {
+      if (e instanceof Error && e.message === 'JWT_REFRESH_SECRET not configured') throw e;
       throw new UnauthorizedException('Invalid refresh token');
     }
 
@@ -207,7 +208,7 @@ export class AuthService {
       type: 'access',
     };
     return this.jwt.sign(payload, {
-      secret: process.env['JWT_ACCESS_SECRET'] ?? 'change-me-access-secret-min-32-chars',
+      secret: process.env['JWT_ACCESS_SECRET'] ?? (() => { throw new Error('JWT_ACCESS_SECRET not configured'); })(),
       expiresIn: '15m',
     });
   }
@@ -223,7 +224,7 @@ export class AuthService {
     };
 
     const token = this.jwt.sign(payload, {
-      secret: process.env['JWT_REFRESH_SECRET'] ?? 'change-me-refresh-secret-min-32-chars',
+      secret: process.env['JWT_REFRESH_SECRET'] ?? (() => { throw new Error('JWT_REFRESH_SECRET not configured'); })(),
       expiresIn: '7d',
     });
 
