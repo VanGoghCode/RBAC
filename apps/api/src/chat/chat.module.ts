@@ -8,6 +8,13 @@ import { ChatController } from './chat.controller';
 import { ChatRepository } from './chat.repository';
 import { ChatService } from './chat.service';
 import { IntentDetector } from './intent/intent-detector';
+import {
+  GuardrailService,
+  InputNormalizer,
+  PromptBoundary,
+  OutputValidator,
+  CanaryService,
+} from './guardrails';
 
 @Module({
   imports: [PrismaModule, AiModule, TasksModule],
@@ -16,6 +23,11 @@ import { IntentDetector } from './intent/intent-detector';
     ChatService,
     ChatRepository,
     IntentDetector,
+    GuardrailService,
+    InputNormalizer,
+    PromptBoundary,
+    OutputValidator,
+    CanaryService,
     {
       provide: AuthorizationScopeService,
       useFactory: (prisma: PrismaService) => new AuthorizationScopeService(prisma),

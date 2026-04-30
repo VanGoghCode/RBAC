@@ -8,9 +8,12 @@ import {
   Sse,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
-import { Observable, from, map, switchMap } from 'rxjs';
+import { Observable, from, map } from 'rxjs';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser } from '../auth/decorators';
+import { ThrottlerBehindProxyGuard } from '../auth/guards';
 import { ChatService } from './chat.service';
 import {
   ChatAskSchema,
@@ -20,11 +23,13 @@ import {
 import type { AuthenticatedUser } from '@task-ai/shared/types';
 
 @Controller('chat')
+@UseGuards(ThrottlerBehindProxyGuard)
 export class ChatController {
   constructor(private readonly service: ChatService) {}
 
   @Post('ask')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
   async ask(
     @CurrentUser() user: AuthenticatedUser,
     @Body() body: unknown,
@@ -35,6 +40,7 @@ export class ChatController {
 
   @Sse('ask/stream')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
   askStream(
     @CurrentUser() user: AuthenticatedUser,
     @Body() body: unknown,

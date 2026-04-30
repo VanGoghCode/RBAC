@@ -177,7 +177,7 @@ Owner Expectations: The README can explain threshold, limitations, and future tu
 
 ## Other
 
-- [ ] Confirm pre-push command are running and working successfully.
+- [x] Confirm pre-push command are running and working successfully.
 
 ---
 

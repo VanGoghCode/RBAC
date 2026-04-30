@@ -14,12 +14,15 @@ import { LlmTelemetryService } from '../ai/llm-telemetry.service';
 import { PrismaService } from '../prisma';
 import { ChatRepository } from './chat.repository';
 import { IntentDetector, type ExtractedTask } from './intent/intent-detector';
+import { GuardrailService } from './guardrails';
 import type { ChatAskDto, ChatHistoryQueryDto, ConversationMessagesQueryDto } from './dto';
 import type { LlmClient, EmbeddingClient } from '@task-ai/ai';
 import type { AuthorizationScope } from '@task-ai/shared/types';
 
 const MAX_CONTEXT_LENGTH = 4000;
 const MAX_CONVERSATION_MEMORY = 5;
+
+const SAFE_BLOCKED_MESSAGE = 'I cannot process that request. Please try rephrasing your question.';
 
 export interface ChatSource {
   taskId: string;
@@ -59,6 +62,7 @@ export class ChatService {
     private readonly promptRenderer: PromptRenderer,
     private readonly telemetry: LlmTelemetryService,
     private readonly intentDetector: IntentDetector,
+    private readonly guardrailService: GuardrailService,
   ) {}
 
   async ask(userId: string, dto: ChatAskDto): Promise<ChatAskResult> {
@@ -67,6 +71,47 @@ export class ChatService {
 
     if (!scope.allowedOrgIds.includes(dto.orgId)) {
       throw new ForbiddenException('You do not have access to this organization');
+    }
+
+    // ─── Input Guardrail ──────────────────────────────────────────
+    const inputCheck = this.guardrailService.checkInput(dto.message);
+    if (inputCheck.flagged) {
+      this.logger.warn(`Input guardrail flagged: ${inputCheck.flaggedPhrases.join(', ')}`);
+      await this.auditRepo.log({
+        actorId: userId,
+        orgId: dto.orgId,
+        action: 'GUARDRAIL_INPUT_BLOCKED',
+        resourceType: 'chat',
+        resourceId: 'blocked',
+        metadata: {
+          flaggedPhrases: inputCheck.flaggedPhrases,
+          redactedMessage: this.guardrailService.redactForLogs(dto.message.slice(0, 200)),
+        },
+      });
+
+      // Create conversation if needed for context
+      let conversationId = dto.conversationId;
+      if (!conversationId) {
+        const conv = await this.chatRepo.createConversation(userId, dto.orgId);
+        conversationId = conv.id;
+      }
+      const userMsg = await this.chatRepo.saveMessage(conversationId, 'user', dto.message);
+      const assistantMsg = await this.chatRepo.saveMessage(
+        conversationId,
+        'assistant',
+        SAFE_BLOCKED_MESSAGE,
+      );
+
+      return {
+        answer: SAFE_BLOCKED_MESSAGE,
+        sources: [],
+        conversationId,
+        userMessageId: userMsg.id,
+        assistantMessageId: assistantMsg.id,
+        intent: 'unknown',
+        guardrailSafe: false,
+        latencyMs: Date.now() - start,
+      };
     }
 
     // Get or create conversation
@@ -82,7 +127,7 @@ export class ChatService {
     }
 
     // Detect intent
-    const intent = await this.intentDetector.detectIntent(dto.message);
+    const intent = await this.intentDetector.detectIntent(inputCheck.normalized);
 
     // Handle task creation intent
     if (intent === 'create_task') {
@@ -90,7 +135,7 @@ export class ChatService {
     }
 
     // Standard RAG query flow
-    return this.handleQueryIntent(userId, scope, dto, conversationId, start, intent);
+    return this.handleQueryIntent(userId, scope, { ...dto, message: inputCheck.normalized }, conversationId, start, intent);
   }
 
   private async handleQueryIntent(
@@ -137,6 +182,7 @@ export class ChatService {
     // Load full task context for retrieved tasks
     const sources: ChatSource[] = [];
     const contextParts: string[] = [];
+    const taskRecords: Array<{ taskId: string; text: string }> = [];
 
     for (const result of vectorResults) {
       const task = await this.prisma.task.findFirst({
@@ -175,17 +221,22 @@ export class ChatService {
         .map((a) => `${a.type}: ${a.comment ?? 'no details'}`)
         .join('; ');
 
-      contextParts.push(
-        `[Task: ${task.title}] (ID: ${task.id})\n` +
+      const taskText =
         `Status: ${task.status} | Priority: ${task.priority}\n` +
         `Assignee: ${task.assignee?.name ?? 'Unassigned'}\n` +
         `Due: ${task.dueAt?.toISOString() ?? 'No due date'}\n` +
         `Description: ${task.description ?? 'No description'}\n` +
-        `Recent Activity: ${recentActivity || 'None'}`,
-      );
+        `Recent Activity: ${recentActivity || 'None'}`;
+
+      contextParts.push(`[Task: ${task.title}] (ID: ${task.id})\n${taskText}`);
+      taskRecords.push({ taskId: task.id, text: taskText });
     }
 
-    const contextText = contextParts.join('\n\n').slice(0, MAX_CONTEXT_LENGTH);
+    // ─── Prompt Boundary Protection ───────────────────────────────
+    const safeContext = this.guardrailService.buildSafeContext(taskRecords);
+    const contextText = safeContext.slice(0, MAX_CONTEXT_LENGTH);
+    const boundaryInstruction = this.guardrailService.getBoundaryInstruction();
+    const canaryToken = this.guardrailService.getCanaryToken();
 
     // Build conversation memory
     const memoryMessages = await this.chatRepo.getRecentMessages(conversationId, MAX_CONVERSATION_MEMORY * 2);
@@ -195,9 +246,9 @@ export class ChatService {
       .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
       .join('\n');
 
-    // Render RAG prompt
+    // Render RAG prompt with boundary protection
     const fullPrompt = this.promptRenderer.render(
-      RAG_SYSTEM_PROMPT,
+      `${boundaryInstruction}\n\n${RAG_SYSTEM_PROMPT}\n\nCANARY: ${canaryToken}`,
       {
         context: contextText || 'No relevant tasks found for this query.',
         question: memoryBlock ? `${memoryBlock}\n\nLatest Question: ${dto.message}` : dto.message,
@@ -245,24 +296,61 @@ export class ChatService {
       latencyMs: llmResponse.latencyMs,
     });
 
-    // Guardrail check
-    let guardrailSafe = true;
-    try {
-      const canaryToken = `canary-${Date.now()}`;
-      const guardrailRendered = this.promptRenderer.render(
-        GUARDRAIL_PROMPT,
-        { canaryToken, response: llmResponse.content.slice(0, 2000) },
-        'guardrail',
-      );
-      const guardrailResponse = await this.llm.complete(guardrailRendered.text, {
-        maxTokens: 200,
-        temperature: 0,
+    // ─── Output Guardrail ─────────────────────────────────────────
+    const outputCheck = this.guardrailService.checkOutput(
+      llmResponse.content,
+      sources.map((s) => ({ taskId: s.taskId, title: s.title, similarity: s.similarity })),
+    );
+
+    let guardrailSafe = outputCheck.safe;
+    let finalAnswer = llmResponse.content;
+
+    if (outputCheck.blocked) {
+      this.logger.warn(`Output guardrail blocked: ${outputCheck.reasons.join(', ')}`);
+      finalAnswer = SAFE_BLOCKED_MESSAGE;
+      guardrailSafe = false;
+
+      await this.auditRepo.log({
+        actorId: userId,
+        orgId: dto.orgId,
+        action: 'GUARDRAIL_OUTPUT_BLOCKED',
+        resourceType: 'chat',
+        resourceId: 'blocked',
+        metadata: {
+          reasons: outputCheck.reasons,
+          canaryLeaked: outputCheck.canaryLeaked,
+          canaryHint: this.guardrailService.redactForLogs(canaryToken).slice(0, 20),
+        },
       });
-      const guardJson = JSON.parse(guardrailResponse.content.match(/\{[\s\S]*\}/)?.[0] ?? '{"safe":true}');
-      guardrailSafe = guardJson.safe !== false;
-    } catch {
-      // If guardrail fails, allow response but log
-      this.logger.warn('Guardrail check failed, allowing response');
+
+      await this.telemetry.logInteraction({
+        modelId: llmResponse.modelId,
+        latencyMs: Date.now() - start,
+        failureCategory: outputCheck.canaryLeaked ? 'canary_leaked' : 'guardrail_blocked',
+        metadata: { reasons: outputCheck.reasons },
+      });
+    }
+
+    // Guardrail LLM check (secondary, existing pattern — kept for defense in depth)
+    if (guardrailSafe) {
+      try {
+        const guardrailRendered = this.promptRenderer.render(
+          GUARDRAIL_PROMPT,
+          { canaryToken, response: finalAnswer.slice(0, 2000) },
+          'guardrail',
+        );
+        const guardrailResponse = await this.llm.complete(guardrailRendered.text, {
+          maxTokens: 200,
+          temperature: 0,
+        });
+        const guardJson = JSON.parse(guardrailResponse.content.match(/\{[\s\S]*\}/)?.[0] ?? '{"safe":true}');
+        if (guardJson.safe === false) {
+          guardrailSafe = false;
+          finalAnswer = SAFE_BLOCKED_MESSAGE;
+        }
+      } catch {
+        this.logger.warn('Guardrail LLM check failed, allowing response');
+      }
     }
 
     // Save assistant message
@@ -270,7 +358,7 @@ export class ChatService {
     const assistantMsg = await this.chatRepo.saveMessage(
       conversationId,
       'assistant',
-      llmResponse.content,
+      finalAnswer,
       sourcesJson,
       { safe: guardrailSafe },
     );
@@ -283,7 +371,7 @@ export class ChatService {
     }
 
     return {
-      answer: llmResponse.content,
+      answer: finalAnswer,
       sources,
       conversationId,
       userMessageId: userMsg.id,
@@ -337,6 +425,35 @@ export class ChatService {
         assistantMessageId: assistantMsg.id,
         intent: 'create_task',
         guardrailSafe: true,
+        latencyMs: Date.now() - start,
+      };
+    }
+
+    // ─── Output Validation: Validate extracted task ───────────────
+    const taskValidation = this.guardrailService.validateExtractedTask(JSON.stringify(extracted));
+    if (!taskValidation.valid) {
+      this.logger.warn(`Extracted task validation failed: ${taskValidation.errors.join(', ')}`);
+      await this.auditRepo.log({
+        actorId: userId,
+        orgId: dto.orgId,
+        action: 'GUARDRAIL_TASK_VALIDATION_FAILED',
+        resourceType: 'chat',
+        resourceId: 'blocked',
+        metadata: { errors: taskValidation.errors },
+      });
+      const assistantMsg = await this.chatRepo.saveMessage(
+        conversationId,
+        'assistant',
+        'I could not safely create that task. Please try rephrasing your request.',
+      );
+      return {
+        answer: 'I could not safely create that task. Please try rephrasing your request.',
+        sources: [],
+        conversationId,
+        userMessageId: userMsg.id,
+        assistantMessageId: assistantMsg.id,
+        intent: 'create_task',
+        guardrailSafe: false,
         latencyMs: Date.now() - start,
       };
     }
