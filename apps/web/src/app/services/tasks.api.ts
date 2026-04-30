@@ -52,6 +52,8 @@ export interface CreateTaskPayload {
   assigneeId?: string;
   dueAt?: string;
   orgId: string;
+  dedupDecision?: 'MERGE' | 'SKIP' | 'CREATE_ANYWAY' | 'DISMISSED';
+  dedupRationale?: string;
 }
 
 export interface UpdateTaskPayload {
@@ -84,6 +86,27 @@ export interface PaginatedActivities {
   hasMore: boolean;
 }
 
+export interface DedupCandidate {
+  taskId: string;
+  title: string;
+  status: string;
+  priority: string;
+  assigneeName: string | null;
+  updatedAt: string;
+  similarity: number;
+}
+
+export interface DedupCheckResponse {
+  candidates: DedupCandidate[];
+  hasDuplicates: boolean;
+}
+
+export interface DedupConflictError {
+  statusCode: number;
+  message: string;
+  candidates: DedupCandidate[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class TasksApi {
   private readonly http = inject(HttpClient);
@@ -106,6 +129,10 @@ export class TasksApi {
 
   create(payload: CreateTaskPayload): Observable<TaskItem> {
     return this.http.post<TaskItem>(this.baseUrl, payload);
+  }
+
+  checkDuplicates(payload: { title: string; description?: string; orgId: string }): Observable<DedupCheckResponse> {
+    return this.http.post<DedupCheckResponse>(`${this.baseUrl}/deduplicate`, payload);
   }
 
   update(id: string, payload: UpdateTaskPayload): Observable<TaskItem> {

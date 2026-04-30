@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { AuthorizationScopeService } from '@task-ai/auth';
-import { TaskRepository, AuditRepository } from '@task-ai/tasks';
+import { AuditRepository, TaskRepository, VectorSearchRepository } from '@task-ai/tasks';
+import { AiModule } from '../ai/ai.module';
 import { PrismaModule, PrismaService } from '../prisma';
+import { TaskDeduplicationService } from './task-deduplication.service';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AiModule],
   controllers: [TasksController],
   providers: [
     TasksService,
+    TaskDeduplicationService,
     {
       provide: AuthorizationScopeService,
       useFactory: (prisma: PrismaService) => new AuthorizationScopeService(prisma),

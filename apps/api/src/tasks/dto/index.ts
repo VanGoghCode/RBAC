@@ -15,3 +15,17 @@ export type {
   CreateCommentDto,
   ActivityQueryDto,
 } from './task.dto';
+export {
+  DeduplicateCheckSchema,
+  DedupDecisionSchema,
+  CreateTaskWithDedupSchema,
+  DEDUP_DECISIONS,
+} from './dedup.dto';
+export type {
+  DedupDecision,
+  DeduplicateCheckDto,
+  CreateTaskWithDedupDto,
+  DeduplicationCandidate,
+  DeduplicationCheckResult,
+  DedupConflictResponse,
+} from './dedup.dto';

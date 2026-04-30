@@ -17,13 +17,19 @@ import {
   TaskListQuerySchema,
   CreateCommentSchema,
   ActivityQuerySchema,
+  DeduplicateCheckSchema,
+  CreateTaskWithDedupSchema,
 } from './dto';
+import { TaskDeduplicationService } from './task-deduplication.service';
 import { TasksService } from './tasks.service';
 import type { AuthenticatedUser } from '@task-ai/shared/types';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly service: TasksService) {}
+  constructor(
+    private readonly service: TasksService,
+    private readonly dedupService: TaskDeduplicationService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -31,8 +37,17 @@ export class TasksController {
     @CurrentUser() user: AuthenticatedUser,
     @Body() body: unknown,
   ) {
-    const dto = CreateTaskSchema.parse(body);
-    return this.service.create(user.userId, dto);
+    const dto = CreateTaskWithDedupSchema.parse(body);
+    return this.service.createWithDedup(user.userId, dto);
+  }
+
+  @Post('deduplicate')
+  async checkDuplicates(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() body: unknown,
+  ) {
+    const dto = DeduplicateCheckSchema.parse(body);
+    return this.dedupService.checkForDuplicates(user.userId, dto);
   }
 
   @Get()

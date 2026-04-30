@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import {
   AuthorizationScopeService,
@@ -10,12 +11,14 @@ import {
 } from '@task-ai/auth';
 import { TaskRepository, AuditRepository } from '@task-ai/tasks';
 import { PrismaService } from '../prisma';
+import { TaskDeduplicationService } from './task-deduplication.service';
 import type {
   CreateTaskDto,
   UpdateTaskDto,
   TaskListQueryDto,
   CreateCommentDto,
   ActivityQueryDto,
+  CreateTaskWithDedupDto,
 } from './dto';
 
 @Injectable()
@@ -27,6 +30,7 @@ export class TasksService {
     private readonly taskRepo: TaskRepository,
     private readonly auditRepo: AuditRepository,
     private readonly scopeService: AuthorizationScopeService,
+    private readonly dedupService: TaskDeduplicationService,
   ) {}
 
   async create(userId: string, dto: CreateTaskDto) {
@@ -74,6 +78,83 @@ export class TasksService {
     });
 
     return task;
+  }
+
+  async createWithDedup(userId: string, dto: CreateTaskWithDedupDto) {
+    const scope = await this.scopeService.resolveScope(userId);
+
+    if (!this.permission.canCreateTask(scope, dto.orgId)) {
+      throw new ForbiddenException('You cannot create tasks in this organization');
+    }
+
+    // Check for duplicates
+    const dedupResult = await this.dedupService.checkForDuplicates(userId, {
+      title: dto.title,
+      description: dto.description,
+      status: dto.status,
+      priority: dto.priority,
+      category: dto.category,
+      tags: dto.tags,
+      assigneeId: dto.assigneeId,
+      dueAt: dto.dueAt,
+      orgId: dto.orgId,
+    });
+
+    if (dedupResult.hasDuplicates && !dto.dedupDecision) {
+      // Return 409 with candidates — frontend must show warning
+      throw new ConflictException({
+        statusCode: 409,
+        message: 'Similar tasks already exist',
+        candidates: dedupResult.candidates,
+      });
+    }
+
+    if (dto.dedupDecision === 'SKIP') {
+      const topCandidate = dedupResult.candidates[0];
+      if (topCandidate) {
+        await this.dedupService.logDecision(
+          userId, dto.orgId, '', topCandidate.taskId,
+          topCandidate.similarity, 'SKIP',
+        );
+      }
+      return { skipped: true };
+    }
+
+    if (dto.dedupDecision === 'MERGE') {
+      const topCandidate = dedupResult.candidates[0];
+      if (!topCandidate) {
+        // No candidate to merge into — fall through to normal create
+      } else {
+        const merged = await this.dedupService.executeMerge(
+          userId, scope, topCandidate.taskId, {
+            title: dto.title,
+            description: dto.description,
+            orgId: dto.orgId,
+            tags: dto.tags,
+          },
+        );
+        if (merged) {
+          await this.dedupService.logDecision(
+            userId, dto.orgId, '', topCandidate.taskId,
+            topCandidate.similarity, 'MERGE',
+          );
+          return { merged: true, taskId: merged.taskId, title: merged.title };
+        }
+        // Merge failed (permission) — fall through to create anyway
+      }
+    }
+
+    if (dto.dedupDecision === 'CREATE_ANYWAY' && dedupResult.candidates[0]) {
+      const topCandidate = dedupResult.candidates[0];
+      await this.dedupService.logDecision(
+        userId, dto.orgId, '', topCandidate.taskId,
+        topCandidate.similarity, 'CREATE_ANYWAY',
+      );
+    }
+
+    // Normal create path
+    const { dedupDecision: _decision, dedupRationale: _rationale, ...taskDto } = dto;
+    return this.create(userId, taskDto as CreateTaskDto);
   }
 
   async findMany(userId: string, query: TaskListQueryDto) {

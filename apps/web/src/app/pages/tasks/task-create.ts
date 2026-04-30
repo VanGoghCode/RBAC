@@ -3,14 +3,16 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthState } from '../../auth/auth.state';
 import { TasksApi, CreateTaskPayload } from '../../services/tasks.api';
+import { DedupWarningPanel } from '../../shared/dedup-warning-panel';
 import { ErrorAlert } from '../../shared/error-alert';
 import { LoadingComponent } from '../../shared/loading';
 import { PageHeader } from '../../shared/page-header';
+import type { DedupCandidate } from '../../services/tasks.api';
 
 @Component({
   selector: 'app-task-create',
   standalone: true,
-  imports: [RouterLink, FormsModule, PageHeader, ErrorAlert, LoadingComponent],
+  imports: [RouterLink, FormsModule, PageHeader, ErrorAlert, LoadingComponent, DedupWarningPanel],
   template: `
     <app-page-header heading="Create Task">
       <a routerLink="/tasks" class="btn btn-secondary">Cancel</a>
@@ -18,6 +20,14 @@ import { PageHeader } from '../../shared/page-header';
 
     @if (submitting()) {
       <app-loading />
+    } @else if (showDedupWarning()) {
+      <app-dedup-warning-panel
+        [candidates]="dedupCandidates"
+        (merge)="onDedupMerge($event)"
+        (skip)="onDedupSkip()"
+        (createAnyway)="onDedupCreateAnyway($event)"
+        (dismissed)="onDedupDismissed()"
+      />
     } @else {
       <form class="form-card" (ngSubmit)="onSubmit()" #form="ngForm">
         @if (error()) {
@@ -109,9 +119,6 @@ import { PageHeader } from '../../shared/page-header';
           </div>
         </div>
 
-        <!-- Extension point: semantic duplicate warning area -->
-        <div class="extension-point" aria-hidden="true"></div>
-
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" [disabled]="!title.trim()">Create Task</button>
           <a routerLink="/tasks" class="btn btn-secondary">Cancel</a>
@@ -154,6 +161,8 @@ export class TaskCreatePage {
 
   readonly error = signal<string | null>(null);
   readonly submitting = signal(false);
+  readonly showDedupWarning = signal(false);
+  readonly dedupCandidates = signal<DedupCandidate[]>([]);
 
   onDueDateChange(value: string): void {
     this.dueAt = value;
@@ -172,6 +181,30 @@ export class TaskCreatePage {
     this.submitting.set(true);
     this.error.set(null);
 
+    // Check for duplicates before creating
+    this.tasksApi.checkDuplicates({
+      title: this.title.trim(),
+      description: this.description.trim() || undefined,
+      orgId,
+    }).subscribe({
+      next: (result) => {
+        if (result.hasDuplicates) {
+          this.dedupCandidates.set(result.candidates);
+          this.showDedupWarning.set(true);
+          this.submitting.set(false);
+        } else {
+          this.createTask();
+        }
+      },
+      error: () => {
+        // Dedup check failed — proceed with normal create
+        this.createTask();
+      },
+    });
+  }
+
+  private buildPayload(decision?: string, rationale?: string): CreateTaskPayload {
+    const orgId = this.authState.activeOrgId()!;
     const payload: CreateTaskPayload = {
       title: this.title.trim(),
       orgId,
@@ -190,16 +223,53 @@ export class TaskCreatePage {
     }
     if (this.dueAt) payload.dueAt = new Date(this.dueAt).toISOString();
     if (this.assigneeId.trim()) payload.assigneeId = this.assigneeId.trim();
+    if (decision) payload.dedupDecision = decision as any;
+    if (rationale) payload.dedupRationale = rationale;
+
+    return payload;
+  }
+
+  private createTask(decision?: string, rationale?: string): void {
+    const payload = this.buildPayload(decision, rationale);
 
     this.tasksApi.create(payload).subscribe({
       next: (task) => {
         this.router.navigate(['/tasks', task.id]);
       },
       error: (err) => {
+        // Handle 409 conflict — backend also checks dedup
+        if (err?.status === 409 && err?.error?.candidates) {
+          this.dedupCandidates.set(err.error.candidates);
+          this.showDedupWarning.set(true);
+          this.submitting.set(false);
+          return;
+        }
         const msg = err?.error?.message ?? err?.message ?? 'Failed to create task.';
         this.error.set(typeof msg === 'string' ? msg : 'Failed to create task.');
         this.submitting.set(false);
       },
     });
+  }
+
+  onDedupMerge(candidate: DedupCandidate): void {
+    this.submitting.set(true);
+    this.showDedupWarning.set(false);
+    this.createTask('MERGE');
+  }
+
+  onDedupSkip(): void {
+    this.showDedupWarning.set(false);
+    this.submitting.set(false);
+  }
+
+  onDedupCreateAnyway(rationale: string): void {
+    this.submitting.set(true);
+    this.showDedupWarning.set(false);
+    this.createTask('CREATE_ANYWAY', rationale);
+  }
+
+  onDedupDismissed(): void {
+    this.showDedupWarning.set(false);
+    this.submitting.set(false);
   }
 }
