@@ -7,7 +7,6 @@ import { TasksModule } from '../tasks';
 import { ChatController } from './chat.controller';
 import { ChatRepository } from './chat.repository';
 import { ChatService } from './chat.service';
-import { IntentDetector } from './intent/intent-detector';
 import {
   GuardrailService,
   InputNormalizer,
@@ -15,6 +14,7 @@ import {
   OutputValidator,
   CanaryService,
 } from './guardrails';
+import { IntentDetector } from './intent/intent-detector';
 
 @Module({
   imports: [PrismaModule, AiModule, TasksModule],

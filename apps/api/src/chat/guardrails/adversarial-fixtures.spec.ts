@@ -1,9 +1,9 @@
-import { InputNormalizer } from './input-normalizer';
-import { GuardrailService } from './guardrail.service';
-import { OutputValidator } from './output-validator';
-import { CanaryService } from './canary.service';
-import { PromptBoundary } from './prompt-boundary';
 import { ADVERSARIAL_FIXTURES, SIMULATED_LLM_RESPONSES } from './adversarial-fixtures';
+import { CanaryService } from './canary.service';
+import { GuardrailService } from './guardrail.service';
+import { InputNormalizer } from './input-normalizer';
+import { OutputValidator } from './output-validator';
+import { PromptBoundary } from './prompt-boundary';
 
 describe('Adversarial Test Suite', () => {
   let guardrail: GuardrailService;

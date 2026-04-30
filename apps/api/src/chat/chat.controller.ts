@@ -10,8 +10,8 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { Observable, from, map } from 'rxjs';
 import { Throttle } from '@nestjs/throttler';
+import { Observable, from, map } from 'rxjs';
 import { CurrentUser } from '../auth/decorators';
 import { ThrottlerBehindProxyGuard } from '../auth/guards';
 import { ChatService } from './chat.service';

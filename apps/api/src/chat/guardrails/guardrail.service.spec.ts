@@ -1,8 +1,8 @@
-import { InputNormalizer } from './input-normalizer';
-import { PromptBoundary } from './prompt-boundary';
-import { OutputValidator } from './output-validator';
 import { CanaryService } from './canary.service';
 import { GuardrailService } from './guardrail.service';
+import { InputNormalizer } from './input-normalizer';
+import { OutputValidator } from './output-validator';
+import { PromptBoundary } from './prompt-boundary';
 import { THREAT_SCENARIOS } from './threat-model';
 
 describe('GuardrailService', () => {

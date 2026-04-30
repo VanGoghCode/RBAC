@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InputNormalizer } from './input-normalizer';
-import { PromptBoundary } from './prompt-boundary';
-import { OutputValidator } from './output-validator';
 import { CanaryService } from './canary.service';
+import { InputNormalizer } from './input-normalizer';
+import { OutputValidator } from './output-validator';
+import { PromptBoundary } from './prompt-boundary';
 
 export interface GuardrailResult {
   safe: boolean;

@@ -13,8 +13,8 @@ import { TaskRepository, AuditRepository, VectorSearchRepository } from '@task-a
 import { LlmTelemetryService } from '../ai/llm-telemetry.service';
 import { PrismaService } from '../prisma';
 import { ChatRepository } from './chat.repository';
-import { IntentDetector, type ExtractedTask } from './intent/intent-detector';
 import { GuardrailService } from './guardrails';
+import { IntentDetector, type ExtractedTask } from './intent/intent-detector';
 import type { ChatAskDto, ChatHistoryQueryDto, ConversationMessagesQueryDto } from './dto';
 import type { LlmClient, EmbeddingClient } from '@task-ai/ai';
 import type { AuthorizationScope } from '@task-ai/shared/types';
