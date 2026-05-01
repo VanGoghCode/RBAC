@@ -56,7 +56,11 @@ describe('PromptRenderer', () => {
   it('renders task creation prompt with user input', () => {
     const result = renderer.render(
       TASK_CREATION_PROMPT,
-      { input: 'Create a high priority task to fix the database connection timeout by Friday' },
+      {
+        input: 'Create a high priority task to fix the database connection timeout by Friday',
+        currentDate: '2026-05-01T00:00:00.000Z',
+        timezone: 'America/Phoenix',
+      },
       'task-creation',
     );
     expect(result.text).toContain('database connection timeout');

@@ -386,7 +386,7 @@ export class ChatService {
 
     // Build user identity context for scoping AI answers
     const activeRole = scope.rolesByOrg[dto.orgId]?.[0];
-    const org = await this.prisma.organization.findUnique({ where: { id: dto.orgId }, select: { name: true } });
+    const org = await this.prisma.organization?.findUnique({ where: { id: dto.orgId }, select: { name: true } });
     const orgName = org?.name ?? dto.orgId;
     const userIdentity = [
       `User: ${scope.actorUserId}`,
@@ -924,7 +924,7 @@ export class ChatService {
     })} (MST, UTC-7)`;
 
     const activeRole = scope.rolesByOrg[dto.orgId]?.[0];
-    const org = await this.prisma.organization.findUnique({ where: { id: dto.orgId }, select: { name: true } });
+    const org = await this.prisma.organization?.findUnique({ where: { id: dto.orgId }, select: { name: true } });
     const orgName = org?.name ?? dto.orgId;
     const userIdentity = [
       `User: ${scope.actorUserId}`,

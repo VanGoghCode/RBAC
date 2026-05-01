@@ -142,7 +142,7 @@ describe('AI Security - RAG Authorization', () => {
       expect(vectorSearch.search).toHaveBeenCalledWith(
         memberScope,
         expect.any(Array),
-        expect.objectContaining({ limit: 5, minSimilarity: 0.5 }),
+        expect.objectContaining({ limit: 10, minSimilarity: 0.5, orgId: 'org-1' }),
       );
     });
 

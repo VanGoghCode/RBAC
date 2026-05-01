@@ -11,8 +11,8 @@ import {
   PipeTransform,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { AuthState } from '../../auth/auth.state';
 import {
   ChatApi,

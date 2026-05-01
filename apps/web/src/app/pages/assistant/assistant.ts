@@ -11,8 +11,8 @@ import {
   PipeTransform,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { AuthState } from '../../auth/auth.state';
 import {
   ChatApi,
@@ -43,7 +43,7 @@ function renderMarkdown(text: string): string {
   let listType = '';
 
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
+    const line = lines[i];
 
     // Skip code block placeholders (handled later)
     if (line.includes('%%CODEBLOCK_')) {
@@ -138,7 +138,8 @@ function inlineFormat(text: string): string {
 
 @Pipe({ name: 'markdown', standalone: true })
 class MarkdownPipe implements PipeTransform {
-  constructor(private readonly sanitizer: DomSanitizer) {}
+  private readonly sanitizer = inject(DomSanitizer);
+
   transform(value: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(renderMarkdown(value));
   }

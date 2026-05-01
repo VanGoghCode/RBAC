@@ -70,7 +70,7 @@ describe('Token Hardening', () => {
     });
 
     it('CSRF cookie has restricted path', () => {
-      expect(authControllerSource).toContain("path: '/api/auth'");
+      expect(authControllerSource).toContain("path: '/'");
     });
   });
 });

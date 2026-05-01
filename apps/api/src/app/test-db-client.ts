@@ -10,6 +10,7 @@ import pg from 'pg';
 export function createTestPrismaClient(): PrismaClient {
   const pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL || 'postgresql://taskai:taskai@localhost:5432/taskai',
+    connectionTimeoutMillis: 1500,
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter } as any);
