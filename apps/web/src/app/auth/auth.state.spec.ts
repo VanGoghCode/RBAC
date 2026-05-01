@@ -19,6 +19,7 @@ describe('AuthState', () => {
   };
 
   beforeEach(() => {
+    localStorage.clear();
     api = {
       login: jest.fn(),
       refresh: jest.fn(),

@@ -9,11 +9,10 @@ import {
   OnDestroy,
   Pipe,
   PipeTransform,
-  DomSanitizer,
-  SafeHtml,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import {
@@ -43,7 +42,7 @@ function renderMarkdown(text: string): string {
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
     .replace(/^# (.+)$/gm, '<h1>$1</h1>')
     // Unordered list items
-    .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
     // Ordered list items
     .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
     // Line breaks (double newline → paragraph, single → br)
@@ -62,9 +61,10 @@ function renderMarkdown(text: string): string {
 
 @Pipe({ name: 'markdown', standalone: true })
 class MarkdownPipe implements PipeTransform {
-  constructor(private readonly sanitizer: DomSanitizer) {}
+  private readonly sanitizer = inject(DomSanitizer);
+
   transform(value: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(renderMarkdown(value));
+    return this.sanitizer.bypassSecurityTrustHtml(renderMarkdown(value)) as SafeHtml;
   }
 }
 
