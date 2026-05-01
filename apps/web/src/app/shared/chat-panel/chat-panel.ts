@@ -7,6 +7,10 @@ import {
   ViewChild,
   AfterViewChecked,
   OnDestroy,
+  Pipe,
+  PipeTransform,
+  DomSanitizer,
+  SafeHtml,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,6 +21,52 @@ import {
   ChatAskResponse,
   ChatSource,
 } from '../../services/chat.api';
+
+/** Lightweight markdown → HTML for chat responses (bold, italic, lists, headers, code, line breaks). */
+function renderMarkdown(text: string): string {
+  let html = text
+    // Escape HTML entities first
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Inline code
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    // Headers (### style, must be at start of line)
+    .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Unordered list items
+    .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+    // Ordered list items
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    // Line breaks (double newline → paragraph, single → br)
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Wrap consecutive <li> in <ul>
+  html = html.replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul>$1</ul>');
+  // Wrap in paragraph tags
+  html = `<p>${html}</p>`;
+  // Clean up empty paragraphs
+  html = html.replace(/<p>\s*<\/p>/g, '');
+
+  return html;
+}
+
+@Pipe({ name: 'markdown', standalone: true })
+class MarkdownPipe implements PipeTransform {
+  constructor(private readonly sanitizer: DomSanitizer) {}
+  transform(value: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(renderMarkdown(value));
+  }
+}
 
 interface DisplayMessage {
   role: 'user' | 'assistant';
@@ -35,7 +85,7 @@ const SUGGESTED_PROMPTS = [
 @Component({
   selector: 'app-chat-panel',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, MarkdownPipe],
   template: `
     <div class="chat-panel" [class.open]="open()" role="complementary" aria-label="Task Assistant">
       <div class="chat-header">
@@ -67,7 +117,7 @@ const SUGGESTED_PROMPTS = [
                 <span></span><span></span><span></span>
               </div>
             } @else {
-              <div class="message-content">{{ msg.content }}</div>
+              <div class="message-content" [innerHTML]="msg.content | markdown"></div>
             }
 
             @if (msg.sources.length > 0 && !msg.loading) {
@@ -263,10 +313,47 @@ const SUGGESTED_PROMPTS = [
       color: var(--color-text);
     }
     .message-content {
-      white-space: pre-wrap;
       word-break: break-word;
       line-height: var(--leading-relaxed);
       font-size: var(--text-sm);
+    }
+    .message-content p {
+      margin: 0 0 var(--space-xs) 0;
+    }
+    .message-content p:last-child {
+      margin-bottom: 0;
+    }
+    .message-content strong {
+      font-weight: var(--font-semibold);
+    }
+    .message-content em {
+      font-style: italic;
+    }
+    .message-content h1,
+    .message-content h2,
+    .message-content h3,
+    .message-content h4 {
+      font-weight: var(--font-semibold);
+      margin: var(--space-sm) 0 var(--space-xs) 0;
+    }
+    .message-content h1 { font-size: var(--text-lg); }
+    .message-content h2 { font-size: var(--text-base); }
+    .message-content h3 { font-size: var(--text-sm); }
+    .message-content h4 { font-size: var(--text-xs); }
+    .message-content ul {
+      margin: var(--space-xs) 0;
+      padding-left: var(--space-lg);
+      list-style: disc;
+    }
+    .message-content li {
+      margin-bottom: var(--space-3xs);
+    }
+    .message-content code {
+      background: var(--color-surface-container);
+      padding: var(--space-3xs) var(--space-2xs);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
     }
 
     .typing-indicator {

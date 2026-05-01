@@ -231,10 +231,11 @@ export class ChatService {
       };
     }
 
-    // Vector search with authorization scope
+    // Vector search scoped to the active organization only
     const vectorResults = await this.vectorSearch.search(scope, queryEmbedding, {
-      limit: 5,
+      limit: 10,
       minSimilarity: 0.5,
+      orgId: dto.orgId,
     });
 
     // Collect task IDs from vector search to avoid duplicates
@@ -246,7 +247,7 @@ export class ChatService {
     const structuredQuery = detectStructuredQuery(dto.message);
 
     if (structuredQuery && vectorResults.length < 3) {
-      const filters: Record<string, string> = { ...structuredQuery };
+      const filters: Record<string, string> = { ...structuredQuery, orgId: dto.orgId };
       if (filters.assigneeId === '__currentUser__') {
         filters.assigneeId = userId;
       } else {
@@ -256,7 +257,7 @@ export class ChatService {
       try {
         const dbResults = await this.taskRepo.findMany(
           scope,
-          { limit: 5 },
+          { limit: 10 },
           filters,
           'dueAt',
           'asc',
@@ -287,7 +288,7 @@ export class ChatService {
       if (seenTaskIds.has(result.taskId)) continue;
       seenTaskIds.add(result.taskId);
       const task = await this.prisma.task.findFirst({
-        where: { id: result.taskId, deletedAt: null },
+        where: { id: result.taskId, deletedAt: null, orgId: dto.orgId },
         include: {
           assignee: { select: { name: true } },
           activities: {
@@ -335,7 +336,32 @@ export class ChatService {
 
     // ─── Prompt Boundary Protection ───────────────────────────────
     const safeContext = this.guardrailService.buildSafeContext(taskRecords);
-    const contextText = safeContext.slice(0, MAX_CONTEXT_LENGTH);
+    const now = new Date();
+    const currentDateTime = `Current Date/Time: ${now.toLocaleString('en-US', {
+      timeZone: 'America/Phoenix',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short',
+    })} (MST, UTC-7)`;
+
+    // Build user identity context for scoping AI answers
+    const activeRole = scope.rolesByOrg[dto.orgId]?.[0];
+    const org = await this.prisma.organization.findUnique({ where: { id: dto.orgId }, select: { name: true } });
+    const orgName = org?.name ?? dto.orgId;
+    const userIdentity = [
+      `User: ${scope.actorUserId}`,
+      `Organization: ${orgName} (${dto.orgId})`,
+      activeRole ? `Role: ${activeRole}` : null,
+      'IMPORTANT: Answer ONLY about tasks belonging to the above organization. Never reference tasks from other organizations.',
+    ].filter(Boolean).join('\n');
+
+    const contextHeader = `${currentDateTime}\n${userIdentity}\n`;
+    const contextText = `${contextHeader}\n${safeContext.slice(0, MAX_CONTEXT_LENGTH - contextHeader.length)}`;
     const boundaryInstruction = this.guardrailService.getBoundaryInstruction();
     const canaryToken = this.guardrailService.getCanaryToken();
 
@@ -355,7 +381,7 @@ export class ChatService {
     const fullPrompt = this.promptRenderer.render(
       `${boundaryInstruction}\n\n${RAG_SYSTEM_PROMPT}`,
       {
-        context: contextText || 'No relevant tasks found for this query.',
+        context: contextParts.length > 0 ? contextText : `${contextHeader}\nNo relevant tasks found for this query.`,
         question: memoryBlock ? `${memoryBlock}\n\nLatest Question: ${dto.message}` : dto.message,
       },
       'rag-system',

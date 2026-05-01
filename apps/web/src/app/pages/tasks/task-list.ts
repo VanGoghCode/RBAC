@@ -104,6 +104,10 @@ import { StatusBadge } from '../../shared/status-badge';
     }
   `,
   styles: [`
+    :host {
+      display: block;
+      padding: var(--space-lg) 0;
+    }
     .filters {
       display: flex;
       flex-wrap: wrap;

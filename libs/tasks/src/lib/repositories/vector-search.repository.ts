@@ -22,6 +22,7 @@ export class VectorSearchRepository {
     options?: {
       limit?: number;
       minSimilarity?: number;
+      orgId?: string;
     },
   ): Promise<VectorSearchResult[]> {
     const limit = Math.min(options?.limit ?? 10, 100);
@@ -29,6 +30,9 @@ export class VectorSearchRepository {
     const vectorLiteral = `[${embedding.join(',')}]`;
 
     const visibilityFilter = this.getVisibilityFilter(scope);
+
+    // Scope to single org if provided, otherwise all allowed orgs
+    const orgIds = options?.orgId ? [options.orgId] : scope.allowedOrgIds;
 
     const rows = await this.prisma.$queryRawUnsafe<
       Array<{ task_id: string; title: string; similarity: number; org_id: string; visibility: string }>
@@ -48,7 +52,7 @@ export class VectorSearchRepository {
        ORDER BY te.embedding <=> $1::vector
        LIMIT $4`,
       vectorLiteral,
-      scope.allowedOrgIds,
+      orgIds,
       minSimilarity,
       limit,
     );

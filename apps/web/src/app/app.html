@@ -74,8 +74,8 @@
     aria-label="Main navigation"
   >
     <ul class="sidebar-nav">
-      <li><a routerLink="/dashboard" routerLinkActive="active" (click)="sidebarOpen.set(false)">Dashboard</a></li>
-      <li><a routerLink="/tasks" routerLinkActive="active" (click)="sidebarOpen.set(false)">Tasks</a></li>
+      <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+      <li><a routerLink="/tasks" routerLinkActive="active">Tasks</a></li>
     </ul>
   </nav>
 
@@ -87,3 +87,7 @@
 <main id="main-content" class="main-content" [class.with-sidebar]="authState.isAuthenticated() && sidebarOpen()" [class.login-layout]="!authState.isAuthenticated()">
   <router-outlet></router-outlet>
 </main>
+
+@if (authState.isAuthenticated()) {
+  <app-chat-panel />
+}

@@ -1,11 +1,12 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { AuthState } from './auth/auth.state';
+import { ChatPanelComponent } from './shared/chat-panel/chat-panel';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, ChatPanelComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
