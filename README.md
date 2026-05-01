@@ -1,4 +1,4 @@
-# Mother AI – Secure AI Task Management System
+# Task AI – Secure AI Task Management System
 
 > A secure, intelligent task management workspace that helps teams organize work, understand priorities, and get grounded answers about their tasks — with AI-powered chat, semantic deduplication, and prompt injection guardrails.
 
@@ -28,7 +28,7 @@
 
 ## Overview
 
-Mother AI is a team task management system where users create, assign, track, and discuss work within organizations. An AI assistant answers questions about tasks using Retrieval-Augmented Generation (RAG), creates tasks from natural language, and detects duplicate tasks before creation — all scoped to the user's permissions.
+Task AI is a team task management system where users create, assign, track, and discuss work within organizations. An AI assistant answers questions about tasks using Retrieval-Augmented Generation (RAG), creates tasks from natural language, and detects duplicate tasks before creation — all scoped to the user's permissions.
 
 **Core idea:** AI-powered task manager where every AI response is grounded in real data and bounded by role-based access control.
 
@@ -46,7 +46,7 @@ Mother AI is a team task management system where users create, assign, track, an
 
 ## Demo
 
-> **Demo video:** _[Link to be added]_
+> **Demo video:** https://www.youtube.com/watch?v=YcFionEbKzU
 
 ### Demo Credentials
 

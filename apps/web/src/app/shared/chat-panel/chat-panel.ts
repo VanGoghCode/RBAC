@@ -127,10 +127,10 @@ const SUGGESTED_PROMPTS = [
   standalone: true,
   imports: [FormsModule, MarkdownPipe],
   template: `
-    <div class="chat-panel" [class.open]="open()" role="complementary" aria-label="Task Assistant">
+    <div class="chat-panel" [class.open]="open()" role="complementary" aria-label="Computer">
       <div class="chat-header">
         <div class="chat-header-text">
-          <h2>Task Assistant</h2>
+          <h2>Computer</h2>
           <span class="chat-header-badge">AI</span>
         </div>
         <button class="chat-close" (click)="toggle()" aria-label="Close chat panel">&times;</button>
@@ -217,13 +217,13 @@ const SUGGESTED_PROMPTS = [
     <button
       class="chat-toggle"
       (click)="toggle()"
-      [attr.aria-label]="open() ? 'Close task assistant' : 'Open task assistant'"
+      [attr.aria-label]="open() ? 'Close Computer' : 'Open Computer'"
       [attr.aria-expanded]="open()"
     >
       @if (open()) {
         &#10005;
       } @else {
-        &#128172;
+        Computer
       }
     </button>
   `,
@@ -559,13 +559,17 @@ const SUGGESTED_PROMPTS = [
       position: fixed;
       bottom: var(--space-xl);
       right: var(--space-xl);
-      width: 56px;
-      height: 56px;
-      border-radius: var(--radius-full);
+      width: auto;
+      min-width: 56px;
+      height: 42px;
+      padding: 0 var(--space-md);
+      border-radius: var(--radius-md);
       border: none;
       background: var(--color-primary);
       color: var(--color-on-primary);
-      font-size: var(--text-2xl);
+      font-size: var(--text-sm);
+      font-weight: var(--font-bold);
+      letter-spacing: var(--tracking-wide);
       cursor: pointer;
       box-shadow: var(--shadow-lg);
       z-index: 999;
