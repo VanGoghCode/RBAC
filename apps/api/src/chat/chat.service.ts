@@ -264,7 +264,13 @@ export class ChatService {
 
         for (const task of dbResults.items) {
           if (!seenTaskIds.has(task.id)) {
-            vectorResults.push({ taskId: task.id, similarity: 1.0 });
+            vectorResults.push({
+              taskId: task.id,
+              title: task.title,
+              similarity: 1.0,
+              orgId: task.orgId,
+              visibility: task.visibility,
+            });
           }
         }
       } catch (error) {
