@@ -152,10 +152,6 @@
 
 .sidebar.open { transform: translateX(0); }
 
-@media (min-width: 769px) {
-  .sidebar { transform: translateX(0); }
-}
-
 .sidebar-nav {
   list-style: none;
   display: flex;
@@ -203,9 +199,12 @@
 
 /* ─── Main Content ─────────────────────────────────────────────── */
 .main-content {
-  padding-top: var(--topbar-height);
   min-height: 100vh;
   background: var(--color-background);
+}
+
+.main-content:not(.login-layout) {
+  padding-top: var(--topbar-height);
 }
 
 .main-content.with-sidebar {

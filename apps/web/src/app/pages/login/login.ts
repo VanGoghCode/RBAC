@@ -73,12 +73,18 @@ import { AuthState } from '../../auth/auth.state';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      margin: 0;
+    }
     .login-page {
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--space-lg);
+      padding: 0;
+      margin: 0;
       background: var(--color-background);
     }
     .login-card {
@@ -225,8 +231,8 @@ export class LoginPage {
 
     try {
       await this.authState.login(this.email, this.password);
-      const returnUrl = sessionStorage.getItem('returnUrl') ?? '/';
-      sessionStorage.removeItem('returnUrl');
+      const returnUrl = localStorage.getItem('returnUrl') ?? '/';
+      localStorage.removeItem('returnUrl');
       this.router.navigate([returnUrl]);
     } catch {
       this.error = 'Invalid email or password.';

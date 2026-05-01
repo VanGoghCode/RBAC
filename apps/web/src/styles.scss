@@ -738,11 +738,5 @@ select.input {
   display: block;
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: var(--space-lg) var(--content-padding);
-}
-
-@media (min-width: 769px) {
-  .main-content > router-outlet + * {
-    padding: var(--space-xl) var(--space-3xl);
-  }
+  padding: 0;
 }

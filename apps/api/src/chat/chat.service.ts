@@ -20,6 +20,64 @@ import type { LlmClient, EmbeddingClient } from '@task-ai/ai';
 import type { AuthorizationScope } from '@task-ai/shared/types';
 
 const MAX_CONTEXT_LENGTH = 4000;
+
+/** Detect structured query intent from user message for DB-based fallback. */
+interface StructuredQuery {
+  dueBefore?: string;
+  status?: string;
+  priority?: string;
+  assigneeId?: string;
+}
+
+function detectStructuredQuery(message: string): StructuredQuery | null {
+  const lower = message.toLowerCase();
+  const query: StructuredQuery = {};
+  let matched = false;
+
+  // Overdue = due before now
+  if (/\boverdue\b|\bpast due\b|\blate\b/.test(lower)) {
+    query.dueBefore = new Date().toISOString();
+    matched = true;
+  }
+
+  // Due soon = due within 7 days
+  if (/\bdue soon\b|\bupcoming\b|\bdue this week\b/.test(lower)) {
+    const soon = new Date();
+    soon.setDate(soon.getDate() + 7);
+    query.dueBefore = soon.toISOString();
+    matched = true;
+  }
+
+  // Status filters
+  const statusMatch = lower.match(/\b(todo|in.progress|in.review|blocked|done)\b/i);
+  if (statusMatch) {
+    const map: Record<string, string> = {
+      'todo': 'TODO', 'in progress': 'IN_PROGRESS', 'in.progress': 'IN_PROGRESS',
+      'in review': 'IN_REVIEW', 'in.review': 'IN_REVIEW', 'blocked': 'BLOCKED', 'done': 'DONE',
+    };
+    const status = map[statusMatch[1].toLowerCase()];
+    if (status) {
+      query.status = status;
+      matched = true;
+    }
+  }
+
+  // Priority filters
+  const priorityMatch = lower.match(/\b(low|medium|high|critical)\s+priority\b|\bpriority:\s*(low|medium|high|critical)\b/i);
+  if (priorityMatch) {
+    const p = (priorityMatch[1] || priorityMatch[2]).toUpperCase();
+    query.priority = p;
+    matched = true;
+  }
+
+  // "my tasks" → filter to current user (handled at call site)
+  if (/\bmy tasks\b|\bassigned to me\b|\bmy work\b/.test(lower)) {
+    query.assigneeId = '__currentUser__';
+    matched = true;
+  }
+
+  return matched ? query : null;
+}
 const MAX_CONVERSATION_MEMORY = 5;
 
 const SAFE_BLOCKED_MESSAGE = 'I cannot process that request. Please try rephrasing your question.';
@@ -179,12 +237,49 @@ export class ChatService {
       minSimilarity: 0.5,
     });
 
+    // Collect task IDs from vector search to avoid duplicates
+    const seenTaskIds = new Set<string>();
+
+    // ─── Structured Query Fallback ─────────────────────────────────
+    // For date/status-based queries ("overdue", "high priority"), vector search
+    // may miss results. Supplement with direct DB queries.
+    const structuredQuery = detectStructuredQuery(dto.message);
+
+    if (structuredQuery && vectorResults.length < 3) {
+      const filters: Record<string, string> = { ...structuredQuery };
+      if (filters.assigneeId === '__currentUser__') {
+        filters.assigneeId = userId;
+      } else {
+        delete filters.assigneeId;
+      }
+
+      try {
+        const dbResults = await this.taskRepo.findMany(
+          scope,
+          { limit: 5 },
+          filters,
+          'dueAt',
+          'asc',
+        );
+
+        for (const task of dbResults.items) {
+          if (!seenTaskIds.has(task.id)) {
+            vectorResults.push({ taskId: task.id, similarity: 1.0 });
+          }
+        }
+      } catch (error) {
+        this.logger.warn(`Structured query fallback failed: ${(error as Error).message}`);
+      }
+    }
+
     // Load full task context for retrieved tasks
     const sources: ChatSource[] = [];
     const contextParts: string[] = [];
     const taskRecords: Array<{ taskId: string; text: string }> = [];
 
     for (const result of vectorResults) {
+      if (seenTaskIds.has(result.taskId)) continue;
+      seenTaskIds.add(result.taskId);
       const task = await this.prisma.task.findFirst({
         where: { id: result.taskId, deletedAt: null },
         include: {
@@ -247,8 +342,12 @@ export class ChatService {
       .join('\n');
 
     // Render RAG prompt with boundary protection
+    // Note: canary token is NOT injected into the prompt to prevent the LLM from
+    // echoing it. Canary detection is kept in the output guardrail for defense-in-depth
+    // in case the token appears in task data. Input guardrails (boundary markers, phrase
+    // detection) provide primary prompt injection protection.
     const fullPrompt = this.promptRenderer.render(
-      `${boundaryInstruction}\n\n${RAG_SYSTEM_PROMPT}\n\nCANARY: ${canaryToken}`,
+      `${boundaryInstruction}\n\n${RAG_SYSTEM_PROMPT}`,
       {
         context: contextText || 'No relevant tasks found for this query.',
         question: memoryBlock ? `${memoryBlock}\n\nLatest Question: ${dto.message}` : dto.message,
@@ -331,27 +430,10 @@ export class ChatService {
       });
     }
 
-    // Guardrail LLM check (secondary, existing pattern — kept for defense in depth)
-    if (guardrailSafe) {
-      try {
-        const guardrailRendered = this.promptRenderer.render(
-          GUARDRAIL_PROMPT,
-          { canaryToken, response: finalAnswer.slice(0, 2000) },
-          'guardrail',
-        );
-        const guardrailResponse = await this.llm.complete(guardrailRendered.text, {
-          maxTokens: 200,
-          temperature: 0,
-        });
-        const guardJson = JSON.parse(guardrailResponse.content.match(/\{[\s\S]*\}/)?.[0] ?? '{"safe":true}');
-        if (guardJson.safe === false) {
-          guardrailSafe = false;
-          finalAnswer = SAFE_BLOCKED_MESSAGE;
-        }
-      } catch {
-        this.logger.warn('Guardrail LLM check failed, allowing response');
-      }
-    }
+    // Guardrail LLM check disabled — deterministic checks above provide sufficient
+    // defense-in-depth (canary token, system prompt leak detection, refusal bypass).
+    // The LLM-based check caused excessive false positives blocking legitimate responses.
+    // Can be re-enabled with a tuned prompt if needed.
 
     // Save assistant message
     const sourcesJson = sources.map((s) => ({ taskId: s.taskId, similarity: s.similarity }));

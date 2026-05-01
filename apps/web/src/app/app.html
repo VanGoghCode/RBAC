@@ -84,6 +84,6 @@
   }
 }
 
-<main id="main-content" class="main-content" [class.with-sidebar]="authState.isAuthenticated()">
+<main id="main-content" class="main-content" [class.with-sidebar]="authState.isAuthenticated() && sidebarOpen()" [class.login-layout]="!authState.isAuthenticated()">
   <router-outlet></router-outlet>
 </main>

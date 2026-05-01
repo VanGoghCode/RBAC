@@ -54,7 +54,16 @@ export class IntentDetector {
   }
 
   async extractTask(message: string): Promise<ExtractedTask | null> {
-    const rendered = this.promptRenderer.render(TASK_CREATION_PROMPT, { input: message }, 'task-creation');
+    const now = new Date();
+    const rendered = this.promptRenderer.render(
+      TASK_CREATION_PROMPT,
+      {
+        input: message,
+        currentDate: now.toISOString(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      'task-creation',
+    );
 
     const response = await this.llm.complete(rendered.text, {
       maxTokens: 500,

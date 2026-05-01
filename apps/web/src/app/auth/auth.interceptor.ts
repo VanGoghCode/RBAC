@@ -16,9 +16,9 @@ export const authInterceptor: HttpInterceptorFn = (
   const authState = inject(AuthState);
   const router = inject(Router);
 
-  const isAuthEndpoint = req.url.includes('/auth/');
   const isLogin = req.url.includes('/auth/login');
   const isRefresh = req.url.includes('/auth/refresh');
+  const isLogout = req.url.includes('/auth/logout');
   const isMutating = req.method !== 'GET' && req.method !== 'HEAD';
 
   let authReq = req;
@@ -33,8 +33,8 @@ export const authInterceptor: HttpInterceptorFn = (
     }
   }
 
-  // Skip auth header for login/refresh endpoints
-  if (isLogin || isRefresh) {
+  // Skip auth header + 401 retry for auth endpoints
+  if (isLogin || isRefresh || isLogout) {
     return next(authReq);
   }
 
@@ -47,7 +47,7 @@ export const authInterceptor: HttpInterceptorFn = (
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && token) {
+      if (error.status === 401) {
         return from(authState.refreshOnLoad()).pipe(
           switchMap(() => {
             const newToken = authState.getAccessToken();
@@ -57,7 +57,9 @@ export const authInterceptor: HttpInterceptorFn = (
               });
               return next(retryReq);
             }
-            authState.logout();
+            // Refresh failed — clear state and redirect directly (no API logout to avoid loop)
+            authState.clearState();
+            router.navigate(['/login']);
             return throwError(() => error);
           }),
         );

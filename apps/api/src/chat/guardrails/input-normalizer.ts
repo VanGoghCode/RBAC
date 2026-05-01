@@ -29,12 +29,17 @@ export class InputNormalizer {
       normalized = normalized.slice(0, maxLength);
     }
 
-    // Detect high-risk phrases (case-insensitive, whitespace-collapsed)
+    // Collapse single-character spacing: "I G N O R E" → "IGNORE"
+    const compacted = normalized.replace(/(?<=\b\w)\s+(?=\w\b)/g, '');
+
+    // Detect high-risk phrases against both normalized and compacted forms
     const lowered = normalized.toLowerCase();
+    const compactedLower = compacted.toLowerCase();
     const flaggedPhrases: string[] = [];
 
     for (const phrase of HIGH_RISK_PHRASES) {
-      if (lowered.includes(phrase.toLowerCase())) {
+      const phraseLower = phrase.toLowerCase();
+      if (lowered.includes(phraseLower) || compactedLower.includes(phraseLower)) {
         flaggedPhrases.push(phrase);
       }
     }
@@ -62,8 +67,9 @@ export class InputNormalizer {
   /** Check if a string contains high-risk patterns without normalizing. */
   isFlagged(text: string): boolean {
     const lowered = text.toLowerCase();
+    const compacted = text.replace(/\s+/g, ' ').replace(/(?<=\b\w)\s+(?=\w\b)/g, '').toLowerCase();
     const hasRisk = HIGH_RISK_PHRASES.some((phrase) =>
-      lowered.includes(phrase.toLowerCase()),
+      lowered.includes(phrase.toLowerCase()) || compacted.includes(phrase.toLowerCase()),
     );
     if (!hasRisk) return false;
     // Check benign override

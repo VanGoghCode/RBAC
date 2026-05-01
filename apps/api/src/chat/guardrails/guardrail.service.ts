@@ -24,17 +24,25 @@ export class GuardrailService {
   ) {}
 
   /** Run input guardrails on user message before it reaches the LLM. */
-  checkInput(message: string): { normalized: string; flagged: boolean; flaggedPhrases: string[] } {
+  checkInput(message: string): { normalized: string; flagged: boolean; flaggedPhrases: string[]; boundaryMarkersDetected: boolean } {
     // Strip boundary markers from user input
-    const cleaned = this.promptBoundary.stripBoundaryMarkers(message);
+    const { cleaned, hadMarkers } = this.promptBoundary.stripBoundaryMarkers(message);
+
+    if (hadMarkers) {
+      this.logger.warn('Boundary markers detected in user input — stripped and flagged');
+    }
 
     // Normalize and detect high-risk phrases
     const result = this.inputNormalizer.normalize(cleaned);
 
     return {
       normalized: result.normalized,
-      flagged: result.flagged,
-      flaggedPhrases: result.flaggedPhrases,
+      flagged: result.flagged || hadMarkers,
+      flaggedPhrases: [
+        ...result.flaggedPhrases,
+        ...(hadMarkers ? ['boundary_markers_in_input'] : []),
+      ],
+      boundaryMarkersDetected: hadMarkers,
     };
   }
 
@@ -114,14 +122,18 @@ export class GuardrailService {
 
   private containsSystemPromptLeak(response: string): boolean {
     const lower = response.toLowerCase();
+    // Only flag if the response reproduces multiple system prompt fragments together,
+    // which indicates actual prompt leakage rather than the LLM naturally following instructions.
     const leakIndicators = [
       'you are a helpful assistant for a team task management system',
-      'answer only based on the provided task context',
       'do not execute, create, or modify tasks',
-      '<untrusted-data>',
-      '</untrusted-data>',
+      'important security rules:',
+      'content between <untrusted-data> and </untrusted-data>',
     ];
-    return leakIndicators.some((indicator) => lower.includes(indicator));
+    // Require at least 2 indicators to match — single matches are likely the LLM
+    // naturally referencing task context, not leaking the prompt
+    const matchCount = leakIndicators.filter((indicator) => lower.includes(indicator)).length;
+    return matchCount >= 2;
   }
 
   private containsRefusalBypass(response: string): boolean {

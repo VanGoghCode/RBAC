@@ -40,10 +40,12 @@ export class PromptBoundary {
     return text.includes(this.START) || text.includes(this.END);
   }
 
-  /** Strip any boundary markers from user input to prevent injection. */
-  stripBoundaryMarkers(text: string): string {
-    return text
+  /** Strip any boundary markers from user input to prevent injection. Returns cleaned text and whether markers were found. */
+  stripBoundaryMarkers(text: string): { cleaned: string; hadMarkers: boolean } {
+    const hadMarkers = this.containsBoundaryMarkers(text);
+    const cleaned = text
       .replace(/<\/?untrusted-data>/g, '')
       .trim();
+    return { cleaned, hadMarkers };
   }
 }

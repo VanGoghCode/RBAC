@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthState } from './auth/auth.state';
 
 @Component({
@@ -11,7 +11,8 @@ import { AuthState } from './auth/auth.state';
 })
 export class App {
   readonly authState = inject(AuthState);
-  readonly sidebarOpen = signal(false);
+  private readonly router = inject(Router);
+  readonly sidebarOpen = signal(true);
   readonly userMenuOpen = signal(false);
   readonly orgMenuOpen = signal(false);
 
@@ -45,6 +46,10 @@ export class App {
   switchOrg(orgId: string): void {
     this.authState.setActiveOrg(orgId);
     this.orgMenuOpen.set(false);
+    // Force route reload by navigating away then back
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard']);
+    });
   }
 
   async logout(): Promise<void> {

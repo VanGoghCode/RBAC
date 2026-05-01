@@ -4,6 +4,7 @@ import { AuthApi } from './auth.api';
 import type { UserProfileResponse, OrgRole, MembershipResponse } from '@task-ai/shared/types';
 
 const ACTIVE_ORG_KEY = 'taskai_active_org';
+const USER_KEY = 'taskai_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthState {
@@ -11,8 +12,9 @@ export class AuthState {
   private readonly router = inject(Router);
 
   private readonly _accessToken = signal<string | null>(null);
-  private readonly _user = signal<UserProfileResponse | null>(null);
-  private readonly _activeOrgId = signal<string | null>(null);
+  private readonly _user = signal<UserProfileResponse | null>(this._loadUser());
+  private readonly _activeOrgId = signal<string | null>(localStorage.getItem(ACTIVE_ORG_KEY));
+  private _refreshPromise: Promise<void> | null = null;
 
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._user() !== null);
@@ -35,6 +37,7 @@ export class AuthState {
         next: (res) => {
           this._accessToken.set(res.accessToken);
           this._user.set(res.user);
+          this._persistUser(res.user);
           this._restoreActiveOrg(res.user.memberships);
           resolve();
         },
@@ -44,28 +47,34 @@ export class AuthState {
   }
 
   refreshOnLoad(): Promise<void> {
-    return new Promise((resolve) => {
+    if (this._refreshPromise) return this._refreshPromise;
+    this._refreshPromise = new Promise((resolve) => {
       this.api.refresh().subscribe({
         next: (res) => {
           this._accessToken.set(res.accessToken);
           this.api.getProfile().subscribe({
             next: (profile) => {
               this._user.set(profile);
+              this._persistUser(profile);
               this._restoreActiveOrg(profile.memberships);
+              this._refreshPromise = null;
               resolve();
             },
             error: () => {
               this.clear();
+              this._refreshPromise = null;
               resolve();
             },
           });
         },
         error: () => {
           this.clear();
+          this._refreshPromise = null;
           resolve();
         },
       });
     });
+    return this._refreshPromise;
   }
 
   logout(): Promise<void> {
@@ -99,26 +108,47 @@ export class AuthState {
     return roles.some((r) => (levels[r] ?? 0) >= (levels[role] ?? 0));
   }
 
+  /** Clear auth state without calling logout API. Used by interceptor to break 401 loops. */
+  clearState(): void {
+    this.clear();
+  }
+
   private clear(): void {
     this._accessToken.set(null);
     this._user.set(null);
     this._activeOrgId.set(null);
-    try { sessionStorage.removeItem(ACTIVE_ORG_KEY); } catch { /* storage unavailable */ }
+    this._clearPersistedUser();
+    try { localStorage.removeItem(ACTIVE_ORG_KEY); } catch { /* storage unavailable */ }
   }
 
   setActiveOrg(orgId: string): void {
     const memberships = this._user()?.memberships ?? [];
     if (memberships.some((m) => m.orgId === orgId)) {
       this._activeOrgId.set(orgId);
-      try { sessionStorage.setItem(ACTIVE_ORG_KEY, orgId); } catch { /* storage unavailable */ }
+      try { localStorage.setItem(ACTIVE_ORG_KEY, orgId); } catch { /* storage unavailable */ }
     }
   }
 
   private _restoreActiveOrg(memberships: MembershipResponse[]): void {
-    const saved = sessionStorage.getItem(ACTIVE_ORG_KEY);
+    const saved = localStorage.getItem(ACTIVE_ORG_KEY);
     if (saved && memberships.some((m) => m.orgId === saved)) {
       this._activeOrgId.set(saved);
     }
     // else: activeOrgId computed falls back to memberships[0]
+  }
+
+  private _loadUser(): UserProfileResponse | null {
+    try {
+      const raw = localStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  private _persistUser(user: UserProfileResponse): void {
+    try { localStorage.setItem(USER_KEY, JSON.stringify(user)); } catch { /* storage unavailable */ }
+  }
+
+  private _clearPersistedUser(): void {
+    try { localStorage.removeItem(USER_KEY); } catch { /* storage unavailable */ }
   }
 }
