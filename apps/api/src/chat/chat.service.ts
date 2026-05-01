@@ -279,6 +279,35 @@ export class ChatService {
       }
     }
 
+    // ─── General DB Fallback ───────────────────────────────────────
+    // If vector search returned nothing and no structured query matched,
+    // fetch recent non-DONE tasks from the org so the AI has context.
+    if (vectorResults.length === 0 && !structuredQuery) {
+      try {
+        const recentTasks = await this.taskRepo.findMany(
+          scope,
+          { limit: 10 },
+          { orgId: dto.orgId },
+          'updatedAt',
+          'desc',
+        );
+
+        for (const task of recentTasks.items) {
+          if (!seenTaskIds.has(task.id)) {
+            vectorResults.push({
+              taskId: task.id,
+              title: task.title,
+              similarity: 0.5,
+              orgId: task.orgId,
+              visibility: task.visibility,
+            });
+          }
+        }
+      } catch (error) {
+        this.logger.warn(`General DB fallback failed: ${(error as Error).message}`);
+      }
+    }
+
     // Load full task context for retrieved tasks
     const sources: ChatSource[] = [];
     const contextParts: string[] = [];

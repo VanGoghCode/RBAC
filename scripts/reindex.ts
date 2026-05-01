@@ -9,8 +9,8 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime';
-import { BedrockEmbeddingClient, TaskCompositeTextBuilder } from '@task-ai/ai';
-import { TaskVisibility } from '@prisma/client';
+import { BedrockEmbeddingClient } from '@task-ai/ai';
+import { createHash } from 'crypto';
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://taskai:taskai@localhost:5432/taskai',
@@ -21,12 +21,35 @@ const prisma = new PrismaClient({ adapter } as any);
 const region = process.env.AWS_REGION ?? 'us-east-1';
 const embeddingModelId = process.env.BEDROCK_EMBEDDING_MODEL_ID ?? 'amazon.titan-embed-text-v2:0';
 
+function buildCompositeText(task: any): { text: string; contentHash: string } {
+  const parts = [
+    `Title: ${task.title}`,
+    task.description ? `Description: ${task.description}` : '',
+    `Status: ${task.status}`,
+    `Priority: ${task.priority}`,
+    task.category ? `Category: ${task.category}` : '',
+    task.assignee?.name ? `Assignee: ${task.assignee.name}` : '',
+    task.dueAt ? `Due: ${new Date(task.dueAt).toISOString()}` : '',
+    task.tags?.length ? `Tags: ${task.tags.join(', ')}` : '',
+  ];
+
+  if (task.activities?.length) {
+    const activityText = task.activities
+      .map((a: any) => a.comment || `${a.type}: ${a.fromValue} → ${a.toValue}`)
+      .filter(Boolean)
+      .join('; ');
+    if (activityText) parts.push(`Recent Activity: ${activityText}`);
+  }
+
+  const text = parts.filter(Boolean).join('\n');
+  const contentHash = createHash('sha256').update(text).digest('hex');
+  return { text, contentHash };
+}
+
 async function main() {
   const bedrockClient = new BedrockRuntimeClient({ region });
   const embeddingClient = new BedrockEmbeddingClient(bedrockClient, embeddingModelId);
-  const textBuilder = new TaskCompositeTextBuilder();
 
-  // Find tasks without embeddings or with stale embeddings
   const tasks = await prisma.task.findMany({
     where: { deletedAt: null },
     include: {
@@ -47,7 +70,6 @@ async function main() {
     },
   });
 
-  // eslint-disable-next-line no-console
   console.log(`Found ${tasks.length} tasks. Indexing...`);
 
   let indexed = 0;
@@ -55,25 +77,14 @@ async function main() {
   let failed = 0;
 
   for (const task of tasks) {
-    // Skip if embedding is fresh (not stale)
     if (task.embedding && !task.embedding.staleAt && task.embedding.contentHash !== '') {
       skipped++;
       continue;
     }
 
     try {
-      const composite = textBuilder.build(task, {
-        assigneeName: task.assignee?.name,
-        activities: task.activities.map((a) => ({
-          type: a.type,
-          fromValue: a.fromValue,
-          toValue: a.toValue,
-          comment: a.comment,
-          createdAt: a.createdAt.toISOString(),
-        })),
-      });
+      const composite = buildCompositeText(task);
 
-      // Skip if content unchanged
       if (task.embedding && task.embedding.contentHash === composite.contentHash && task.embedding.contentHash !== '') {
         await prisma.taskEmbedding.update({
           where: { id: task.embedding.id },
@@ -114,16 +125,13 @@ async function main() {
       `;
 
       indexed++;
-      // eslint-disable-next-line no-console
       console.log(`  Indexed: "${task.title}"`);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`  Failed: "${task.title}" - ${(error as Error).message}`);
       failed++;
     }
   }
 
-  // eslint-disable-next-line no-console
   console.log(`\nReindex complete: ${indexed} indexed, ${skipped} skipped, ${failed} failed`);
 
   await prisma.$disconnect();

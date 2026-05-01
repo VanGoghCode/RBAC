@@ -107,6 +107,8 @@ import { StatusBadge } from '../../shared/status-badge';
     :host {
       display: block;
       padding: var(--space-lg) 0;
+      margin-top: var(--space-lg);
+      margin-bottom: var(--space-lg);
     }
     .filters {
       display: flex;

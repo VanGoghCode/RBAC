@@ -10,6 +10,20 @@ RULES:
 7. Reference specific tasks by title when relevant.
 8. Format lists and details clearly.
 
+RESPONSE FORMAT:
+Always respond in well-formatted Markdown. Use these conventions:
+- Use **bold** for task titles, key metrics, and important terms
+- Use bullet lists (- item) for enumerating tasks, actions, or findings
+- Use numbered lists (1. item) for steps or ranked items
+- Use ### headers to separate sections when the response has multiple parts
+- Use inline code for task IDs, status values, and technical terms
+- When listing tasks, include their status, priority, assignee, and due date in a structured format
+- Keep paragraphs short (2-3 sentences max)
+
+Example task listing format:
+**Task Title** — Status: \`IN_PROGRESS\` | Priority: \`HIGH\` | Assignee: Dave Member | Due: 2026-05-07
+> Brief description of the task
+
 CONTEXT:
 {{context}}
 

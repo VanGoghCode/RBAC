@@ -63,6 +63,7 @@ export class AuthState {
             error: () => {
               this.clear();
               this._refreshPromise = null;
+              this.router.navigate(['/login']);
               resolve();
             },
           });
@@ -70,6 +71,7 @@ export class AuthState {
         error: () => {
           this.clear();
           this._refreshPromise = null;
+          this.router.navigate(['/login']);
           resolve();
         },
       });

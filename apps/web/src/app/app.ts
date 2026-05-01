@@ -47,8 +47,8 @@ export class App {
   switchOrg(orgId: string): void {
     this.authState.setActiveOrg(orgId);
     this.orgMenuOpen.set(false);
-    // Force route reload by navigating away then back
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    // Navigate to a temp route then back to force component re-init
+    this.router.navigateByUrl('/tasks', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/dashboard']);
     });
   }

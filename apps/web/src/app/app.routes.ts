@@ -21,6 +21,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./pages/tasks/task-list').then((m) => m.TaskListPage),
       },
       {
+        path: 'assistant',
+        loadComponent: () => import('./pages/assistant/assistant').then((m) => m.AssistantPage),
+      },
+      {
         path: 'tasks/new',
         loadComponent: () => import('./pages/tasks/task-create').then((m) => m.TaskCreatePage),
       },

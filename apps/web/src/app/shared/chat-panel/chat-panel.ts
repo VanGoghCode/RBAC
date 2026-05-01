@@ -21,41 +21,82 @@ import {
   ChatSource,
 } from '../../services/chat.api';
 
-/** Lightweight markdown → HTML for chat responses (bold, italic, lists, headers, code, line breaks). */
+/** Markdown → HTML renderer with blockquotes, code blocks, lists, headers. */
 function renderMarkdown(text: string): string {
+  // Escape HTML first
   let html = text
-    // Escape HTML entities first
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    // Inline code
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Bold
+    .replace(/>/g, '&gt;');
+
+  // Code blocks — protect from further processing
+  const codeBlocks: string[] = [];
+  html = html.replace(/```([\s\S]*?)```/g, (_match, code: string) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push(`<pre><code>${code.trim()}</code></pre>`);
+    return `\n%%CODEBLOCK_${idx}%%\n`;
+  });
+
+  const lines = html.split('\n');
+  const result: string[] = [];
+  let inList = false;
+  let listType = '';
+
+  const inlineFmt = (t: string) => t
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(?<!\*)\*([^\s*](?:.*?[^\s*])?)\*(?!\*)/g, '<em>$1</em>')
     .replace(/__(.+?)__/g, '<strong>$1</strong>')
-    // Italic
-    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
-    .replace(/_(.+?)_/g, '<em>$1</em>')
-    // Headers (### style, must be at start of line)
-    .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    // Unordered list items
-    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    // Ordered list items
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-    // Line breaks (double newline → paragraph, single → br)
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
+    .replace(/_(.+?)_/g, '<em>$1</em>');
 
-  // Wrap consecutive <li> in <ul>
-  html = html.replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul>$1</ul>');
-  // Wrap in paragraph tags
-  html = `<p>${html}</p>`;
-  // Clean up empty paragraphs
+  for (const line of lines) {
+    if (line.includes('%%CODEBLOCK_')) {
+      if (inList) { result.push(listType === 'ul' ? '</ul>' : '</ol>'); inList = false; }
+      result.push(line);
+      continue;
+    }
+    if (/^---+$/.test(line.trim())) {
+      if (inList) { result.push(listType === 'ul' ? '</ul>' : '</ol>'); inList = false; }
+      result.push('<hr>');
+      continue;
+    }
+    const headerMatch = line.match(/^(#{1,4})\s+(.+)$/);
+    if (headerMatch) {
+      if (inList) { result.push(listType === 'ul' ? '</ul>' : '</ol>'); inList = false; }
+      const lvl = headerMatch[1].length;
+      result.push(`<h${lvl}>${inlineFmt(headerMatch[2])}</h${lvl}>`);
+      continue;
+    }
+    const quoteMatch = line.match(/^&gt;\s*(.*)$/);
+    if (quoteMatch) {
+      if (inList) { result.push(listType === 'ul' ? '</ul>' : '</ol>'); inList = false; }
+      result.push(`<blockquote>${inlineFmt(quoteMatch[1])}</blockquote>`);
+      continue;
+    }
+    const ulMatch = line.match(/^[-*]\s+(.+)$/);
+    if (ulMatch) {
+      if (inList && listType !== 'ul') { result.push('</ol>'); inList = false; }
+      if (!inList) { result.push('<ul>'); inList = true; listType = 'ul'; }
+      result.push(`<li>${inlineFmt(ulMatch[1])}</li>`);
+      continue;
+    }
+    const olMatch = line.match(/^\d+\.\s+(.+)$/);
+    if (olMatch) {
+      if (inList && listType !== 'ol') { result.push('</ul>'); inList = false; }
+      if (!inList) { result.push('<ol>'); inList = true; listType = 'ol'; }
+      result.push(`<li>${inlineFmt(olMatch[1])}</li>`);
+      continue;
+    }
+    if (inList) { result.push(listType === 'ul' ? '</ul>' : '</ol>'); inList = false; }
+    if (line.trim() === '') { result.push('<br>'); continue; }
+    result.push(`<p>${inlineFmt(line)}</p>`);
+  }
+  if (inList) { result.push(listType === 'ul' ? '</ul>' : '</ol>'); }
+
+  html = result.join('\n');
+  html = html.replace(/%%CODEBLOCK_(\d+)%%/g, (_m, idx) => codeBlocks[parseInt(idx)]);
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
   html = html.replace(/<p>\s*<\/p>/g, '');
-
+  html = html.replace(/(<br>\s*){2,}/g, '<br>');
   return html;
 }
 
@@ -314,7 +355,7 @@ const SUGGESTED_PROMPTS = [
     }
     .message-content {
       word-break: break-word;
-      line-height: var(--leading-relaxed);
+      line-height: 1.7;
       font-size: var(--text-sm);
     }
     .message-content p {
@@ -324,7 +365,7 @@ const SUGGESTED_PROMPTS = [
       margin-bottom: 0;
     }
     .message-content strong {
-      font-weight: var(--font-semibold);
+      font-weight: 600;
     }
     .message-content em {
       font-style: italic;
@@ -333,27 +374,63 @@ const SUGGESTED_PROMPTS = [
     .message-content h2,
     .message-content h3,
     .message-content h4 {
-      font-weight: var(--font-semibold);
+      font-weight: 700;
       margin: var(--space-sm) 0 var(--space-xs) 0;
+      line-height: 1.3;
     }
     .message-content h1 { font-size: var(--text-lg); }
     .message-content h2 { font-size: var(--text-base); }
     .message-content h3 { font-size: var(--text-sm); }
     .message-content h4 { font-size: var(--text-xs); }
-    .message-content ul {
+    .message-content ul,
+    .message-content ol {
       margin: var(--space-xs) 0;
       padding-left: var(--space-lg);
-      list-style: disc;
     }
+    .message-content ul { list-style: disc; }
+    .message-content ol { list-style: decimal; }
     .message-content li {
       margin-bottom: var(--space-3xs);
+      line-height: 1.6;
     }
     .message-content code {
       background: var(--color-surface-container);
-      padding: var(--space-3xs) var(--space-2xs);
-      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      border-radius: 4px;
       font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--color-primary);
+      border: 1px solid var(--color-border);
+    }
+    .message-content pre {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: var(--space-sm);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin: var(--space-sm) 0;
       font-size: var(--text-xs);
+      line-height: 1.5;
+    }
+    .message-content pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+    }
+    .message-content blockquote {
+      border-left: 3px solid var(--color-primary);
+      margin: var(--space-xs) 0;
+      padding: var(--space-2xs) var(--space-sm);
+      color: var(--color-text-muted);
+      font-style: italic;
+      background: var(--color-surface-container-low);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .message-content hr {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: var(--space-sm) 0;
     }
 
     .typing-indicator {
