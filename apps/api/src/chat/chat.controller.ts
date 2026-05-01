@@ -5,13 +5,13 @@ import {
   Body,
   Param,
   Query,
-  Sse,
   HttpCode,
   HttpStatus,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Observable, from, map } from 'rxjs';
+import { Response } from 'express';
 import { CurrentUser } from '../auth/decorators';
 import { ThrottlerBehindProxyGuard } from '../auth/guards';
 import { ChatService } from './chat.service';
@@ -38,32 +38,30 @@ export class ChatController {
     return this.service.ask(user.userId, dto);
   }
 
-  @Sse('ask/stream')
+  @Post('ask/stream')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { ttl: 60_000, limit: 10 } })
-  askStream(
+  async askStream(
     @CurrentUser() user: AuthenticatedUser,
     @Body() body: unknown,
-  ): Observable<MessageEvent> {
+    @Res() res: Response,
+  ) {
     const dto = ChatAskSchema.parse(body);
-    return from(this.service.ask(user.userId, dto)).pipe(
-      map((result) => {
-        const event = new MessageEvent('message', {
-          data: JSON.stringify({
-            type: 'complete',
-            answer: result.answer,
-            sources: result.sources,
-            conversationId: result.conversationId,
-            userMessageId: result.userMessageId,
-            assistantMessageId: result.assistantMessageId,
-            intent: result.intent,
-            guardrailSafe: result.guardrailSafe,
-            latencyMs: result.latencyMs,
-          }),
-        });
-        return event;
-      }),
-    );
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+
+    try {
+      for await (const event of this.service.askStream(user.userId, dto)) {
+        res.write(`data: ${JSON.stringify(event)}\n\n`);
+      }
+    } catch {
+      res.write(`data: ${JSON.stringify({ type: 'error', text: 'Stream failed unexpectedly.' })}\n\n`);
+    }
+
+    res.end();
   }
 
   @Get('history')

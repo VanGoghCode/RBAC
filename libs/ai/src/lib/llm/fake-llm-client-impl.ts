@@ -1,4 +1,4 @@
-import type { LlmClient, LlmResponse, LlmOptions } from './llm-client.interface';
+import type { LlmClient, LlmResponse, LlmOptions, LlmStreamChunk } from './llm-client.interface';
 
 export interface FakeLlmResponse {
   content: string;
@@ -41,6 +41,35 @@ export class FakeLlmClient implements LlmClient {
       latencyMs: 1,
       promptTokens: prompt.length,
       completionTokens: this.defaultResponse.length,
+    };
+  }
+
+  async *completeStream(prompt: string, options?: LlmOptions): AsyncIterable<LlmStreamChunk> {
+    this.callLog.push({ prompt, options });
+
+    // Find matching response
+    let response = this.defaultResponse;
+    for (const [pattern, resp] of this.responseMap.entries()) {
+      if (prompt.includes(pattern)) {
+        response = resp;
+        break;
+      }
+    }
+
+    // Simulate streaming by yielding word-by-word
+    const words = response.split(' ');
+    for (let i = 0; i < words.length; i++) {
+      yield { text: i === 0 ? words[i] : ' ' + words[i], done: false };
+    }
+
+    yield {
+      text: '',
+      done: true,
+      metadata: {
+        modelId: 'fake-llm',
+        promptTokens: prompt.length,
+        completionTokens: response.length,
+      },
     };
   }
 

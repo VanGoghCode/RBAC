@@ -3,7 +3,7 @@ export { createBedrockClient } from './lib/bedrock/bedrock-client.factory';
 export type { BedrockConfig } from './lib/bedrock/bedrock-client.factory';
 
 // LLM client
-export type { LlmClient, LlmResponse, LlmOptions } from './lib/llm/llm-client.interface';
+export type { LlmClient, LlmResponse, LlmOptions, LlmStreamChunk } from './lib/llm/llm-client.interface';
 export { BedrockLlmClient } from './lib/llm/bedrock-llm-client';
 
 // Embedding client

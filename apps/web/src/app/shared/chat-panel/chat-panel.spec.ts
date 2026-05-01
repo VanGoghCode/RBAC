@@ -6,7 +6,7 @@ import { ChatApi, ChatAskResponse } from '../../services/chat.api';
 import { ChatPanelComponent } from './chat-panel';
 
 describe('ChatPanelComponent', () => {
-  let chatApi: { ask: jest.Mock };
+  let chatApi: { ask: jest.Mock; askStream: jest.Mock };
   let authState: AuthState;
 
   const mockProfile = {
@@ -32,7 +32,10 @@ describe('ChatPanelComponent', () => {
   };
 
   beforeEach(async () => {
-    chatApi = { ask: jest.fn().mockReturnValue(of(mockResponse)) };
+    chatApi = {
+      ask: jest.fn().mockReturnValue(of(mockResponse)),
+      askStream: jest.fn().mockResolvedValue(mockResponse),
+    };
 
     await TestBed.configureTestingModule({
       imports: [ChatPanelComponent],
@@ -82,7 +85,7 @@ describe('ChatPanelComponent', () => {
     expect(el.textContent).toContain('What needs my attention?');
   });
 
-  it('sends message and receives response', () => {
+  it('sends message via askStream', async () => {
     const fixture = TestBed.createComponent(ChatPanelComponent);
     fixture.componentInstance.open.set(true);
     fixture.detectChanges();
@@ -90,23 +93,27 @@ describe('ChatPanelComponent', () => {
     fixture.componentInstance.inputText.set('What tasks are assigned to me?');
     fixture.componentInstance.send();
 
-    expect(chatApi.ask).toHaveBeenCalledWith(
+    expect(chatApi.askStream).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'What tasks are assigned to me?',
         orgId: 'org-1',
       }),
+      expect.any(Function),
     );
+
+    // Wait for the promise to resolve
+    await chatApi.askStream.mock.results[0].value;
   });
 
   it('does not send empty message', () => {
     const fixture = TestBed.createComponent(ChatPanelComponent);
     fixture.componentInstance.inputText.set('');
     fixture.componentInstance.send();
-    expect(chatApi.ask).not.toHaveBeenCalled();
+    expect(chatApi.askStream).not.toHaveBeenCalled();
   });
 
-  it('shows error when API fails', () => {
-    chatApi.ask.mockReturnValue(throwError(() => new Error('API error')));
+  it('shows error when API fails', async () => {
+    chatApi.askStream.mockRejectedValue(new Error('API error'));
     const fixture = TestBed.createComponent(ChatPanelComponent);
     fixture.componentInstance.open.set(true);
     fixture.detectChanges();
@@ -114,7 +121,9 @@ describe('ChatPanelComponent', () => {
     fixture.componentInstance.inputText.set('test');
     fixture.componentInstance.send();
 
-    // After send, check that the component transitions to error state
+    // The send() method calls askStream which rejects — wait for the microtask queue
+    await new Promise((r) => setTimeout(r, 0));
+
     expect(fixture.componentInstance.sending()).toBe(false);
   });
 

@@ -13,7 +13,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Subscription } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import {
   ChatApi,
@@ -190,7 +189,7 @@ const SUGGESTED_PROMPTS = [
                   <div class="avatar ai-avatar">AI</div>
                 }
                 <div class="msg-body">
-                  @if (msg.loading) {
+                  @if (msg.loading && !msg.content) {
                     <div class="typing">
                       <span></span><span></span><span></span>
                     </div>
@@ -667,7 +666,7 @@ const SUGGESTED_PROMPTS = [
     }
   `],
 })
-export class AssistantPage implements AfterViewChecked, OnDestroy {
+export class AssistantPage implements AfterViewChecked {
   private readonly chatApi = inject(ChatApi);
   private readonly authState = inject(AuthState);
   private readonly router = inject(Router);
@@ -680,7 +679,6 @@ export class AssistantPage implements AfterViewChecked, OnDestroy {
 
   private conversationId: string | undefined;
   private shouldScroll = false;
-  private sub?: Subscription;
 
   @ViewChild('messageList') messageListEl!: ElementRef<HTMLElement>;
   @ViewChild('messageInput') messageInputEl!: ElementRef<HTMLTextAreaElement>;
@@ -723,44 +721,44 @@ export class AssistantPage implements AfterViewChecked, OnDestroy {
     this.sending.set(true);
     this.shouldScroll = true;
 
-    this.sub = this.chatApi.ask({
-      message: text,
-      conversationId: this.conversationId,
-      orgId,
-    }).subscribe({
-      next: (response: ChatAskResponse) => {
-        this.conversationId = response.conversationId;
+    this.chatApi.askStream(
+      { message: text, conversationId: this.conversationId, orgId },
+      (accumulated) => {
         this.messages.update((msgs) => {
           const updated = [...msgs];
           const lastIdx = updated.length - 1;
-          if (updated[lastIdx]?.loading) {
-            updated[lastIdx] = {
-              role: 'assistant',
-              content: response.answer,
-              sources: response.sources,
-            };
-          }
+          updated[lastIdx] = { role: 'assistant', content: accumulated, sources: [], loading: true };
           return updated;
         });
-        this.sending.set(false);
         this.shouldScroll = true;
       },
-      error: (err) => {
-        this.messages.update((msgs) => {
-          const updated = [...msgs];
-          const lastIdx = updated.length - 1;
-          if (updated[lastIdx]?.loading) {
-            updated[lastIdx] = {
-              role: 'assistant',
-              content: 'Sorry, I encountered an error. Please try again.',
-              sources: [],
-            };
-          }
-          return updated;
-        });
-        this.error.set(err?.message ?? 'Failed to get response');
-        this.sending.set(false);
-      },
+    ).then((response: ChatAskResponse) => {
+      this.conversationId = response.conversationId;
+      this.messages.update((msgs) => {
+        const updated = [...msgs];
+        const lastIdx = updated.length - 1;
+        updated[lastIdx] = {
+          role: 'assistant',
+          content: response.answer,
+          sources: response.sources,
+        };
+        return updated;
+      });
+      this.sending.set(false);
+      this.shouldScroll = true;
+    }).catch((err) => {
+      this.messages.update((msgs) => {
+        const updated = [...msgs];
+        const lastIdx = updated.length - 1;
+        updated[lastIdx] = {
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+          sources: [],
+        };
+        return updated;
+      });
+      this.error.set(err?.message ?? 'Failed to get response');
+      this.sending.set(false);
     });
   }
 
@@ -774,9 +772,5 @@ export class AssistantPage implements AfterViewChecked, OnDestroy {
       el.scrollTop = el.scrollHeight;
       this.shouldScroll = false;
     }
-  }
-
-  ngOnDestroy() {
-    this.sub?.unsubscribe();
   }
 }

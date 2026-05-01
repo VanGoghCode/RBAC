@@ -9,7 +9,21 @@ export interface LlmCallRecord {
   latencyMs: number;
   redacted?: boolean;
   failureCategory?: string;
+  userId?: string;
+  orgId?: string;
+  promptType?: string;
+  /** Truncated input sent to the LLM (max 500 chars). */
+  inputSnippet?: string;
+  /** Truncated output from the LLM (max 500 chars). */
+  outputSnippet?: string;
   metadata?: Record<string, unknown>;
+}
+
+const MAX_SNIPPET_LENGTH = 500;
+
+function truncate(text: string | undefined): string | undefined {
+  if (!text) return undefined;
+  return text.length > MAX_SNIPPET_LENGTH ? text.slice(0, MAX_SNIPPET_LENGTH) + '...[truncated]' : text;
 }
 
 @Injectable()
@@ -20,6 +34,15 @@ export class LlmTelemetryService {
 
   async logInteraction(record: LlmCallRecord): Promise<void> {
     try {
+      const metadata: Record<string, unknown> = {
+        ...record.metadata,
+        userId: record.userId,
+        orgId: record.orgId,
+        promptType: record.promptType,
+        inputSnippet: truncate(record.inputSnippet),
+        outputSnippet: truncate(record.outputSnippet),
+      };
+
       await this.prisma.llmInteractionLog.create({
         data: {
           modelId: record.modelId,
@@ -28,7 +51,7 @@ export class LlmTelemetryService {
           latencyMs: record.latencyMs,
           redacted: record.redacted ?? true,
           guardrailOutcome: record.failureCategory,
-          metadata: (record.metadata ?? {}) as Prisma.InputJsonValue,
+          metadata: metadata as Prisma.InputJsonValue,
         },
       });
     } catch (error) {
@@ -43,7 +66,7 @@ export class LlmTelemetryService {
     totalCompletionTokens: number;
     failures: number;
   }> {
-    const since = new Date(Date.now() - minutes * 60 * 1000);
+    const since = new Date(Date.now() - minutes * 60_000);
 
     const logs = await this.prisma.llmInteractionLog.findMany({
       where: { createdAt: { gte: since } },
